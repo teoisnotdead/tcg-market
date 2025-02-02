@@ -1,6 +1,7 @@
 import { RoutesApp } from './routes/RoutesApp'
 import { CartProvider } from './context/CartProvider'
 import { UserProvider } from './context/UserProvider'
+import { ThemeProvider } from "@/components/theme-provider"
 
 function TcgMarketApp() {
 
@@ -8,7 +9,9 @@ function TcgMarketApp() {
     <UserProvider>
       <CartProvider>
         <main className='flex-grow'>
-          <RoutesApp />
+          <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+            <RoutesApp />
+          </ThemeProvider>
         </main>
       </CartProvider>
     </UserProvider>
