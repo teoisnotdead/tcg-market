@@ -11,8 +11,7 @@ export const Cart = () => {
 
   const handlePay = async () => {
     if (!token) {
-      // showToast('Debes iniciar sesión para pagar', 'error')
-
+      // aqui va toast de shadcn
       return
     }
 
@@ -27,13 +26,13 @@ export const Cart = () => {
       })
   
       if (hasError) {
-        // showToast('Error al realizar el pago', 'error') 
+        // aqui va toast error de shadcn
       } else {
-        // showToast('Pago realizado con éxito 🤑', 'success')
+        // aqui va toast success de shadcn
         cleanCart()
       }
     } catch (error) {
-      // showToast('Error al realizar el pago', 'error')
+      // aqui va toast error de shadcn
     }
   }
 

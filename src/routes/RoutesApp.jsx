@@ -25,7 +25,7 @@ export const RoutesApp = () => {
         } />
 
         <Route path='/cuenta' element={
-          <AuthGuard hasToken={!token} redirect='/login'>
+          <AuthGuard hasToken={token} redirect='/login'>
             <Profile />
           </AuthGuard>
         } />

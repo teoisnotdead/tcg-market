@@ -11,9 +11,9 @@ import { useUser } from '../context/UserProvider'
 export const Profile = () => {
   const { getUserData, email, logout } = useUser()
 
-  useEffect(() => {
-    getUserData()
-  }, [])
+  // useEffect(() => {
+  //   getUserData()
+  // }, [])
 
   return (
     <SidebarProvider>

@@ -18,75 +18,78 @@ import {
   SidebarMenuButton,
   SidebarRail,
 } from "@/components/ui/sidebar"
-
-const data = {
-  user: {
-    name: "Alfredo Saavedra",
-    email: "alfredo.saavedra.sm@gmail.com",
-    avatar: "/io.webp",
-  },
-  teams: [
-    {
-      name: "Mi cuenta",
-      logo: BadgeCheck,
-      plan: "Plan básico",
-    },
-  ],
-  navMain: [
-    {
-      title: "Perfil",
-      url: "#",
-      icon: UserPen,
-      isActive: true,
-      items: [
-        {
-          title: "General",
-          url: "#"
-        },
-        {
-          title: "Configuración",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Ventas",
-      url: "#",
-      icon: HandCoins,
-      items: [
-        {
-          title: "Crear nueva venta",
-          url: "#",
-        },
-        {
-          title: "Mis ventas",
-          url: "#",
-        },
-        {
-          title: "Historial de ventas",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Compras",
-      url: "#",
-      icon: ShoppingCart,
-      items: [
-        {
-          title: "Mis compras",
-          url: "#",
-        },
-        {
-          title: "Historial de compras",
-          url: "#",
-        },
-      ],
-    },
-  ],
-}
+import { useUser } from '../context/UserProvider'
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { getDataFromLocalStorage } = useUser()
+
+  const data = {
+    user: {
+      name: "Alfredo Saavedra",
+      email: getDataFromLocalStorage().email,
+      avatar: "/io.webp",
+    },
+    teams: [
+      {
+        name: "Mi cuenta",
+        logo: BadgeCheck,
+        plan: "Plan básico",
+      },
+    ],
+    navMain: [
+      {
+        title: "Perfil",
+        url: "#",
+        icon: UserPen,
+        isActive: true,
+        items: [
+          {
+            title: "General",
+            url: "#"
+          },
+          {
+            title: "Configuración",
+            url: "#",
+          },
+        ],
+      },
+      {
+        title: "Ventas",
+        url: "#",
+        icon: HandCoins,
+        items: [
+          {
+            title: "Crear nueva venta",
+            url: "#",
+          },
+          {
+            title: "Mis ventas",
+            url: "#",
+          },
+          {
+            title: "Historial de ventas",
+            url: "#",
+          },
+        ],
+      },
+      {
+        title: "Compras",
+        url: "#",
+        icon: ShoppingCart,
+        items: [
+          {
+            title: "Mis compras",
+            url: "#",
+          },
+          {
+            title: "Historial de compras",
+            url: "#",
+          },
+        ],
+      },
+    ],
+  }
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
