@@ -1,20 +1,27 @@
 import { useFetch } from '../hooks/useFetch'
 import { useEffect } from 'react'
+import { NavHome } from '../components/NavHome'
+import { HeroSection } from '../components/HeroSection'
+import { products } from '../mock/cards'
+import { ProductSection } from '../components/ProductSection'
 
 export const Home = () => {
-  const { data, isLoading, hasError, getFetch } = useFetch();
+  const { data, isLoading, hasError, getFetch } = useFetch()
 
   useEffect(() => {
-    getFetch('');
-  }, [getFetch]);
+    getFetch('')
+  }, [getFetch])
 
   return (
     <>
-      <section className='container mx-auto my-10 px-4'>
-        <h2>TCG Market</h2>
-        <p className='text-gray-600 text-sm'>
-          Una aplicación de comercio electrónico para comprar y vender cartas
-        </p>
+      <section className='mx-auto my-10'>
+        <NavHome />
+        <HeroSection />
+        <ProductSection
+          title='Últimas Agregadas'
+          products={products.slice(0, 3)}
+          showMore={true}
+        />
       </section>
     </>
   )

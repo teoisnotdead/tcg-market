@@ -35,3 +35,42 @@ export const checkoutResponse = {
     cart: [],
   },
 }
+
+export const products = [
+  {
+    id: "lucario-vstar",
+    image: "/lucario.jpg",
+    title: "Lucario VSTAR - SWSH291",
+    set: "SWSH: Sword & Shield Promo Cards",
+    price: "$10.000",
+  },
+  {
+    id: "charizard-vmax",
+    image: "/charizard-vmax.jpg",
+    title: "Charizard VMAX - SWSH261",
+    set: "SWSH: Sword & Shield Promo Cards",
+    price: "$25.000",
+  },
+  {
+    id: "pikachu-vmax",
+    image: "/pikachu-vmax.jpg",
+    title: "Pikachu VMAX - SWSH001",
+    set: "SWSH: Sword & Shield Promo Cards",
+    price: "$15.000",
+  },
+  {
+    id: "rayquaza-vmax",
+    image: "/rayquaza-vmax.jpg",
+    title: "Rayquaza VMAX - Evolving Skies",
+    set: "SWSH: Evolving Skies",
+    price: "$30.000",
+  },
+  {
+    id: "mewtwo-vstar",
+    image: "/mewtwo-vstar.jpg",
+    title: "Mewtwo VSTAR - Pokémon GO",
+    set: "Pokémon GO Expansion",
+    price: "$12.000",
+  },
+];
+
