@@ -1,5 +1,4 @@
 import { useFetch } from '../hooks/useFetch'
-import { useEffect } from 'react'
 import { NavHome } from '../components/NavHome'
 import { HeroSection } from '../components/HeroSection'
 import { products } from '../mock/cards'
