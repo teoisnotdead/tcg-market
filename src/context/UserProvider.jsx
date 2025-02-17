@@ -69,9 +69,9 @@ export const UserProvider = ({ children }) => {
     return data
   }
 
-  const register = async (email, password) => {
+  const register = async (email, name, password) => {
     const url = `${baseUrl}/register`
-    const result = await authRequest(url, { email, password })
+    const result = await authRequest(url, { email, name, password })
 
     if (!result.hasError && result.data)
       setDataFromResponse({ email, token: result.data.token })
