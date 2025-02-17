@@ -22,7 +22,7 @@ import { useEffect } from 'react'
 import { useUser } from '../context/UserProvider'
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { getDataFromLocalStorage, logout } = useUser()
+  const { getDataFromLocalStorage } = useUser()
 
   useEffect(() => {
     getDataFromLocalStorage()

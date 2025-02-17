@@ -47,6 +47,12 @@ export const UserProvider = ({ children }) => {
     return { email, token, name }
   }
 
+  const deleteDataFromLocalStorage = () => {
+    localStorage.removeItem('token')
+    localStorage.removeItem('email')
+    localStorage.removeItem('name')
+  }
+
   const login = async (email, password) => {
     const url = `${baseUrl}/login`
     const result = await authRequest(url, { email, password })
@@ -82,9 +88,7 @@ export const UserProvider = ({ children }) => {
   }
 
   const logout = () => {
-    localStorage.removeItem('token')
-    localStorage.removeItem('email')
-    localStorage.removeItem('name')
+    deleteDataFromLocalStorage()
     setToken(null)
     setEmail(null)
     setName(null)
