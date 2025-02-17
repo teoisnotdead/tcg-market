@@ -15,7 +15,7 @@ export const NavHome = (): JSX.Element => {
   useEffect(() => {
     const userData = getDataFromLocalStorage();
     if (userData.token) {
-      setDataUser({ name: localStorage.getItem("name") || "" });
+      setDataUser({ name: userData.name });
     }
   }, []);
 
