@@ -100,8 +100,8 @@ export const UserProvider = ({ children }) => {
       value={{
         token,
         email,
-        // login,
-        // register,
+        login,
+        register,
         logout,
         getUserData,
         isLoading,
