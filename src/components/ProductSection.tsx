@@ -22,11 +22,15 @@ export const ProductSection: React.FC<ProductSectionProps> = ({
   return (
     <section className="text-white py-10 px-36">
       <h2 className="text-xl font-bold mb-6">{title}</h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-        {products.map((product, index) => (
-          <CardTcg key={index} {...product} />
-        ))}
-      </div>
+      {products.length === 0 ? (
+        <p className="text-gray-400 text-center">No hay productos disponibles.</p>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          {products.map((product, index) => (
+            <CardTcg key={index} {...product} />
+          ))}
+        </div>
+      )}
       {showMore && (
         <div className="text-right mt-6">
           <Link
