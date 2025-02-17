@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
 import { Instagram, MessageCircle, Twitter } from "lucide-react";
 
 export const FooterSection: React.FC = () => {
@@ -6,8 +6,8 @@ export const FooterSection: React.FC = () => {
     <footer className="text-white py-10 px-6 text-center flex flex-col items-center">
       {/* Logo */}
       <img src="./TCG-Market-logo.png" alt="Logo" className="w-60 h-auto" />
+      {/* 
 
-      {/* Menú de enlaces */}
       <nav className="mt-4 flex justify-center space-x-6 text-sm">
         <Link to="/sobre-nosotros" className="hover:text-[#F19F00] transition-all">
           Sobre nosotros
@@ -21,7 +21,8 @@ export const FooterSection: React.FC = () => {
         <Link to="/privacidad" className="hover:text-[#F19F00] transition-all">
           Privacidad
         </Link>
-      </nav>
+      </nav> 
+      */}
 
       {/* Íconos de redes sociales con Lucide */}
       <div className="flex justify-center space-x-6 mt-6 text-2xl">
