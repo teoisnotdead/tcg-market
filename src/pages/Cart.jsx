@@ -41,7 +41,7 @@ export const Cart = () => {
     <section className='mx-auto'>
       <NavHome />
       <div className='container mx-auto my-10 px-4'>
-        <h2 className='text-2xl font-bold text-gray-800'>Carrito de compras</h2>
+        <h2 className='text-2xl font-bold text-white'>Carrito de compras</h2>
         <div className='grid grid-cols-1 gap-4 mt-5 h-full'>
           {cart.length > 0 ? (
             cart.map(({ id, name, img, price, count }) => (
@@ -56,7 +56,7 @@ export const Cart = () => {
                     className='w-24 h-24 object-cover rounded'
                   />
                   <div className='p-4 flex flex-col justify-between'>
-                    <h2 className='font-bold text-gray-800 text-xl uppercase'>
+                    <h2 className='font-bold text-white text-xl uppercase'>
                       {name}
                     </h2>
                     <p className='text-gray-600 text-sm'>
@@ -89,14 +89,14 @@ export const Cart = () => {
               </div>
             ))
           ) : (
-            <h2 className='text-2xl font-bold text-gray-800'>
+            <h2 className='text-2xl font-bold text-white'>
               No hay productos en el carrito
             </h2>
           )}
         </div>
 
         <div className='flex flex-col items-end mt-5 p-4'>
-          <h3 className='font-bold text-gray-800 text-xl uppercase'>
+          <h3 className='font-bold text-white text-xl uppercase'>
             Total: {toLocalString(total)}
           </h3>
           {cart.length > 0 && (
@@ -123,7 +123,7 @@ export const Cart = () => {
         {isLoading && (
           <div className='flex flex-col items-center'>
             {/* <Spinner /> */}
-            <p className='text-xl text-gray-800 mt-5'>Procesando el pago...</p>
+            <p className='text-xl text-white mt-5'>Procesando el pago...</p>
           </div>
         )}
       </div>
