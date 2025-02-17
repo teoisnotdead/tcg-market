@@ -22,7 +22,7 @@ export const Home = () => {
 
   return (
     <>
-      <section className='mx-auto my-10'>
+      <section className='mx-auto'>
         <NavHome />
         <HeroSection />
         {isLoading ? (
