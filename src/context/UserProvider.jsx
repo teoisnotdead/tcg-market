@@ -44,7 +44,7 @@ export const UserProvider = ({ children }) => {
     const email = localStorage.getItem('email')
     const name = localStorage.getItem('name')
 
-    return { email, token }
+    return { email, token, name }
   }
 
   const login = async (email, password) => {
