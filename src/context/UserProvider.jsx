@@ -83,8 +83,11 @@ export const UserProvider = ({ children }) => {
 
   const logout = () => {
     localStorage.removeItem('token')
+    localStorage.removeItem('email')
+    localStorage.removeItem('name')
     setToken(null)
     setEmail(null)
+    setName(null)
     navigate('/login')
   }
 

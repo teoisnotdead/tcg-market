@@ -18,14 +18,19 @@ import {
   SidebarMenuButton,
   SidebarRail,
 } from "@/components/ui/sidebar"
+import { useEffect } from 'react'
 import { useUser } from '../context/UserProvider'
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { getDataFromLocalStorage } = useUser()
+  const { getDataFromLocalStorage, logout } = useUser()
+
+  useEffect(() => {
+    getDataFromLocalStorage()
+  }, [])
 
   const data = {
     user: {
-      name: "Alfredo Saavedra",
+      name: getDataFromLocalStorage().name,
       email: getDataFromLocalStorage().email,
       avatar: "/io.webp",
     },

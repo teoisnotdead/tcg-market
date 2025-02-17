@@ -5,15 +5,8 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from '@/components/ui/sidebar'
-import { useEffect } from 'react'
-import { useUser } from '../context/UserProvider'
 
 export const Profile = () => {
-  const { getUserData, email, logout } = useUser()
-
-  // useEffect(() => {
-  //   getUserData()
-  // }, [])
 
   return (
     <SidebarProvider>
