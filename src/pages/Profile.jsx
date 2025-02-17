@@ -5,6 +5,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from '@/components/ui/sidebar'
+import { NavLink } from 'react-router-dom'
 
 export const Profile = () => {
   return (
@@ -15,18 +16,18 @@ export const Profile = () => {
           <div className='flex items-center gap-2 px-3'>
             <SidebarTrigger />
             <Separator orientation='vertical' className='mr-2 h-4' />
-            <Link to='/' className='text-white text-sm hover:underline'>
+            <NavLink to='/' className='text-white text-sm hover:underline'>
               Página de inicio
-            </Link>
-            <Link
+            </NavLink>
+            <NavLink
               to='/marketplace'
               className='text-white text-sm hover:underline'
             >
               Marketplace
-            </Link>
-            <Link to='/cart' className='text-white text-sm hover:underline'>
+            </NavLink>
+            <NavLink to='/cart' className='text-white text-sm hover:underline'>
               Carrito
-            </Link>
+            </NavLink>
           </div>
         </header>
         <div className='flex flex-1 flex-col gap-4 p-4 pt-0 mt-6'>
