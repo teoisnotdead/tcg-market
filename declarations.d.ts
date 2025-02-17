@@ -1,5 +1,5 @@
-declare module "./routes/RoutesApp";
-declare module "./context/CartProvider";
-declare module "./context/UserProvider";
-declare module "../context/UserProvider";
-declare module "../mock/cards";
+declare module "./routes/RoutesApp.jsx";
+declare module "./context/CartProvider.jsx";
+declare module "./context/UserProvider.jsx";
+declare module "../context/UserProvider.jsx";
+declare module "../mock/cards.js";
