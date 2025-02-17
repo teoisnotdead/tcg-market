@@ -6,7 +6,7 @@ import { Menu, X } from "lucide-react";
 const navLinks = [
   { name: "Inicio", path: "/" },
   { name: "Marketplace", path: "/marketplace" },
-  { name: "Mi cuenta", path: "/cuenta" },
+  { name: "Carrito", path: "/cart" },
 ];
 
 export const NavHome = (): JSX.Element => {
@@ -76,7 +76,7 @@ export const NavHome = (): JSX.Element => {
 
           {dataUser ? (
             <NavLink to="/cuenta" className="py-2 text-lg text-white">
-              {dataUser.name}
+              Mi cuenta
             </NavLink>
           ) : (
             <NavLink
