@@ -9,7 +9,7 @@ export const Home = () => {
   const { data, isLoading, hasError, getFetch } = useFetch()
   const [products, setProducts] = useState([])
 
-  const baseUrl = 'https://tcg-market-api.onrender.com/cards'
+  const baseUrl = 'https://tcg-market-api.onrender.com/cards?limit=3'
 
   const getCards = async () => {
     const { data } = await getFetch(baseUrl)
@@ -26,13 +26,13 @@ export const Home = () => {
         <NavHome />
         <HeroSection />
         {isLoading ? (
-          <div className='flex items-center justify-center'>
+          <div className='flex items-center justify-center mt-10'>
             <div className='animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-white' />
           </div>
         ) : (
           <ProductSection
             title='Últimas Agregadas'
-            products={products.slice(0, 3)}
+            products={products}
             showMore={true}
           />
         )}

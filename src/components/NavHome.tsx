@@ -5,7 +5,7 @@ import { NavLink } from "react-router-dom";
 const navLinks = [
   { name: "Inicio", path: "/" },
   { name: "Marketplace", path: "/marketplace" },
-  { name: "Contacto", path: "/contacto" },
+  { name: "Mi cuenta", path: "/cuenta" },
 ];
 
 export const NavHome = (): JSX.Element => {
