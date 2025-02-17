@@ -58,7 +58,7 @@ export const UserProvider = ({ children }) => {
     const result = await authRequest(url, { email, password })
 
     if (!result.hasError && result.data)
-      setDataFromResponse({ email, token: result.data.token })
+      setDataFromResponse({ email, token: result.data.token, name: result.data.name })
   }
 
   const loginFromMock = async (email, password) => {
