@@ -45,7 +45,7 @@ export const RoutesApp = () => {
           <Route path="/cart" element={<Cart />} />
           <Route path="*" element={<Marketplace />} />
           <Route path="/card/:id" element={<CardDetails />} />
-          {/* <Route path="*" element={<NotFound />} /> */}
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
 
