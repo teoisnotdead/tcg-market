@@ -4,6 +4,7 @@ import { NavHome } from '../components/NavHome'
 import { HeroSection } from '../components/HeroSection'
 import { products } from '../mock/cards'
 import { ProductSection } from '../components/ProductSection'
+import { useState, useEffect } from 'react'
 
 export const Home = () => {
   const { data, isLoading, hasError, getFetch } = useFetch()
