@@ -32,7 +32,7 @@ export const NavHome = (): JSX.Element => {
         </NavLink>
       </div>
 
-      <nav className="hidden md:flex justify-center">
+      <nav className="hidden md:flex justify-center items-center">
         <div className="flex bg-[#D9D9D9]/20 text-white rounded-full px-4 py-2 space-x-6 border border-gray-500">
           {navLinks.map((link) => (
             <NavLink
@@ -48,6 +48,18 @@ export const NavHome = (): JSX.Element => {
           ))}
         </div>
       </nav>
+
+      <div className="hidden md:flex items-center ml-6">
+        {dataUser ? (
+          <NavLink to="/cuenta" className="text-white text-sm font-bold">
+            {dataUser.name}
+          </NavLink>
+        ) : (
+          <NavLink to="/login" className="text-zinc-50 hover:text-zinc-700">
+            Acceder
+          </NavLink>
+        )}
+      </div>
 
       <div className="md:hidden flex items-center">
         <button
@@ -65,8 +77,7 @@ export const NavHome = (): JSX.Element => {
               key={link.path}
               to={link.path}
               className={({ isActive }) =>
-                `py-2 text-lg ${isActive ? "text-[#F19F00] font-bold" : "text-white"
-                }`
+                `py-2 text-lg ${isActive ? "text-[#F19F00] font-bold" : "text-white"}`
               }
               onClick={() => setIsOpen(false)}
             >
@@ -75,8 +86,12 @@ export const NavHome = (): JSX.Element => {
           ))}
 
           {dataUser ? (
-            <NavLink to="/cuenta" className="py-2 text-lg text-white">
-              Mi cuenta
+            <NavLink
+              to="/cuenta"
+              className="py-2 text-lg text-white"
+              onClick={() => setIsOpen(false)}
+            >
+              {dataUser.name}
             </NavLink>
           ) : (
             <NavLink
