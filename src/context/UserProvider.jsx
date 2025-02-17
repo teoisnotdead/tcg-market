@@ -12,7 +12,7 @@ export const UserProvider = ({ children }) => {
   const { isLoading, hasError, getFetch } = useFetch()
 
   const navigate = useNavigate()
-  const baseUrl = 'http://localhost:5000/api/auth'
+  const baseUrl = 'https://tcg-market-api.onrender.com/api/auth'
 
   useEffect(() => {
     const token = localStorage.getItem('token')
@@ -43,13 +43,13 @@ export const UserProvider = ({ children }) => {
     return { email, token }
   }
 
- /*  const login = async (email, password) => {
+  const login = async (email, password) => {
     const url = `${baseUrl}/login`
     const result = await authRequest(url, { email, password })
 
     if (!result.hasError && result.data)
       setDataFromResponse({ email, token: result.data.token })
-  } */
+  }
 
   const loginFromMock = async (email, password) => {
     console.log('loginFromMock')
@@ -69,13 +69,13 @@ export const UserProvider = ({ children }) => {
     return data
   }
 
- /*  const register = async (email, password) => {
+  const register = async (email, password) => {
     const url = `${baseUrl}/registrar`
     const result = await authRequest(url, { email, password })
 
     if (!result.hasError && result.data)
       setDataFromResponse({ email, token: result.data.token })
-  } */
+  }
 
   const logout = () => {
     localStorage.removeItem('token')

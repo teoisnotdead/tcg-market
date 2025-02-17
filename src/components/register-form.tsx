@@ -17,12 +17,14 @@ export function RegisterForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
-  const { registerFromMock, isLoading, hasError } = useUser()
+  const { register, registerFromMock, isLoading, hasError } = useUser()
 
   const [email, setEmail] = useState('')
+  const [name, setName] = useState('')
   const [password, setPassword] = useState('')
 
   const [emailError, setEmailError] = useState(false)
+  const [nameError, setNameError] = useState(false)
   const [passwordError, setPasswordError] = useState(false)
 
   const validateEmail = (email: string) => {
@@ -32,6 +34,10 @@ export function RegisterForm({
 
   const validatePassword = (password: string) => {
     return password.length >= 6
+  }
+
+  const validateName = (name: string) => {
+    return name.length >= 3
   }
 
   const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -49,7 +55,13 @@ export function RegisterForm({
       setPasswordError(false)
     }
 
-    await registerFromMock(email, password)
+    if (!validateName(name)) {
+      setNameError(true)
+    } else {
+      setNameError(false)
+    }
+
+    await registerFromMock(email, name, password)
   }
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -79,6 +91,22 @@ export function RegisterForm({
                   </p>
                 )}
               </div>
+              <div className="grid gap-2 ">
+                <Label htmlFor="name">Nombre</Label>
+                <Input
+                  id="name"
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Nombre"
+                  required
+                />
+                {nameError && (
+                  <p className="text-sm text-red-500">
+                    Ingresa un nombre válido
+                  </p>
+                )}
+              </div>
               <div className="grid gap-2">
                 <div className="flex items-center">
                   <Label htmlFor="password">Contraseña</Label>
@@ -90,11 +118,11 @@ export function RegisterForm({
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="********"
                   required />
-                  {passwordError && (
-                    <p className="text-sm text-red-500">
-                      La contraseña ingresada no es válida
-                    </p>
-                  )}
+                {passwordError && (
+                  <p className="text-sm text-red-500">
+                    La contraseña ingresada no es válida
+                  </p>
+                )}
               </div>
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? "Creando cuenta..." : "Crear cuenta"}
