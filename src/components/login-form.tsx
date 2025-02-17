@@ -17,7 +17,7 @@ export function LoginForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
-  const { loginFromMock, isLoading, hasError } = useUser()
+  const { login, isLoading, hasError } = useUser()
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -31,7 +31,7 @@ export function LoginForm({
     if (!email) setEmailError(true)
     if (!password) setPasswordError(true)
 
-    await loginFromMock(email, password)
+    await login(email, password)
   }
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {

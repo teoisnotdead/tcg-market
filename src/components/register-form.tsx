@@ -17,7 +17,7 @@ export function RegisterForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
-  const { register, registerFromMock, isLoading, hasError } = useUser()
+  const { register, isLoading, hasError } = useUser()
 
   const [email, setEmail] = useState('')
   const [name, setName] = useState('')
@@ -61,7 +61,7 @@ export function RegisterForm({
       setNameError(false)
     }
 
-    await registerFromMock(email, name, password)
+    await register(email, name, password)
   }
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>

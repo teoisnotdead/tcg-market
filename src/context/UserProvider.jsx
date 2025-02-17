@@ -12,7 +12,7 @@ export const UserProvider = ({ children }) => {
   const { isLoading, hasError, getFetch } = useFetch()
 
   const navigate = useNavigate()
-  const baseUrl = 'https://tcg-market-api.onrender.com/api/auth'
+  const baseUrl = 'https://tcg-market-api.onrender.com/auth'
 
   useEffect(() => {
     const token = localStorage.getItem('token')
