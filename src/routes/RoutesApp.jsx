@@ -9,6 +9,7 @@ import { CardDetails } from '../pages/CardDetails'
 import { useUser } from '../context/UserProvider'
 import { AuthGuard } from '../guard/AuthGuard'
 import { FooterSection } from '../components/FooterSection'
+import { NotFound } from '../pages/NotFound'
 
 export const RoutesApp = () => {
   const { token } = useUser()
