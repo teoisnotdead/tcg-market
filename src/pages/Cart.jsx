@@ -2,6 +2,7 @@ import { useFetch } from '../hooks/useFetch'
 import { useUser } from '../context/UserProvider'
 import { useCart } from '../context/CartProvider'
 import { toLocalString } from '../utils/toLocalString'
+import { NavHome } from '../components/NavHome'
 // import { Spinner } from '../components/Spinner'
 
 export const Cart = () => {
