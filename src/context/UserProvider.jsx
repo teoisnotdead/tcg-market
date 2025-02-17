@@ -9,6 +9,7 @@ export const UserContext = createContext()
 export const UserProvider = ({ children }) => {
   const [token, setToken] = useState(null)
   const [email, setEmail] = useState(null)
+  const [name, setName] = useState(null)
   const { isLoading, hasError, getFetch } = useFetch()
 
   const navigate = useNavigate()
@@ -29,16 +30,19 @@ export const UserProvider = ({ children }) => {
     return await getFetch(url, headers)
   }
 
-  const setDataFromResponse = ({ email, token }) => {
+  const setDataFromResponse = ({ email, name, token }) => {
     localStorage.setItem('token', token)
     localStorage.setItem('email', email)
+    localStorage.setItem('name', name)
     setToken(token)
     setEmail(email)
+    setName(name)
   }
 
   const getDataFromLocalStorage = () => {
     const token = localStorage.getItem('token')
     const email = localStorage.getItem('email')
+    const name = localStorage.getItem('name')
 
     return { email, token }
   }
