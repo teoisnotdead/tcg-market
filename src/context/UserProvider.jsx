@@ -70,7 +70,7 @@ export const UserProvider = ({ children }) => {
   }
 
   const register = async (email, password) => {
-    const url = `${baseUrl}/registrar`
+    const url = `${baseUrl}/register`
     const result = await authRequest(url, { email, password })
 
     if (!result.hasError && result.data)
