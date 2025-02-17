@@ -7,7 +7,6 @@ import {
 } from '@/components/ui/sidebar'
 
 export const Profile = () => {
-
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -16,6 +15,18 @@ export const Profile = () => {
           <div className='flex items-center gap-2 px-3'>
             <SidebarTrigger />
             <Separator orientation='vertical' className='mr-2 h-4' />
+            <Link to='/' className='text-white text-sm hover:underline'>
+              Página de inicio
+            </Link>
+            <Link
+              to='/marketplace'
+              className='text-white text-sm hover:underline'
+            >
+              Marketplace
+            </Link>
+            <Link to='/cart' className='text-white text-sm hover:underline'>
+              Carrito
+            </Link>
           </div>
         </header>
         <div className='flex flex-1 flex-col gap-4 p-4 pt-0 mt-6'>
