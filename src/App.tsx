@@ -1,4 +1,4 @@
-import { RoutesApp } from './routes/RoutesApp'
+import { RoutesApp } from './routes/RoutesApp.jsx'
 import { CartProvider } from './context/CartProvider'
 import { UserProvider } from './context/UserProvider'
 import { ThemeProvider } from "@/components/theme-provider"

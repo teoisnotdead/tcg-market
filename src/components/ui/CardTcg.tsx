@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 
 interface CardTcgProps {
+  id: string;
   image: string;
   title: string;
   set: string;
