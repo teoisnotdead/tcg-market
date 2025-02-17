@@ -1,6 +1,6 @@
 import { RoutesApp } from './routes/RoutesApp.jsx'
-import { CartProvider } from './context/CartProvider'
-import { UserProvider } from './context/UserProvider'
+import { CartProvider } from './context/CartProvider.jsx'
+import { UserProvider } from './context/UserProvider.jsx'
 import { ThemeProvider } from "@/components/theme-provider"
 
 function TcgMarketApp() {
