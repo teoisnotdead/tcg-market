@@ -17,7 +17,7 @@ export function LoginForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
-  const { login, loginFromMock, isLoading, hasError } = useUser()
+  const { loginFromMock, isLoading, hasError } = useUser()
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')

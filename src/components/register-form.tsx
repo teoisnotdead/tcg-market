@@ -17,7 +17,7 @@ export function RegisterForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
-  const { register, registerFromMock, isLoading, hasError } = useUser()
+  const { registerFromMock, isLoading, hasError } = useUser()
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')

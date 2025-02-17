@@ -4,11 +4,12 @@ import { CardTcg } from "./ui/CardTcg"
 interface ProductSectionProps {
   title?: string;
   products: {
+    id: string;
     image: string;
     title: string;
     set: string;
     price: string;
-    link: string;
+    link?: string;
   }[];
   showMore?: boolean;
 }
