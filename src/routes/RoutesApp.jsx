@@ -38,7 +38,6 @@ export const RoutesApp = () => {
               </AuthGuard>
             }
           />
-          {/* ✅ Rutas bajo /cuenta ahora están bien definidas */}
           <Route
             path='/cuenta/*'
             element={
@@ -53,13 +52,11 @@ export const RoutesApp = () => {
             <Route path='historial' element={<SalesHistory />} />
           </Route>
 
-          {/* ✅ Rutas principales */}
           <Route path='/' element={<Home />} />
           <Route path='/cart' element={<Cart />} />
           <Route path='/marketplace' element={<Marketplace />} />
           <Route path='/card/:id' element={<CardDetails />} />
 
-          {/* ✅ Página 404 correctamente definida */}
           <Route path='*' element={<NotFound />} />
         </Routes>
       </div>
