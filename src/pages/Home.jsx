@@ -9,7 +9,7 @@ export const Home = () => {
   const { data, isLoading, hasError, getFetch } = useFetch()
   const [products, setProducts] = useState([])
 
-  const baseUrl = 'https://tcg-market-api.onrender.com/cards?limit=3'
+  const baseUrl = 'http://localhost:3000/sales?limit=3'
 
   const getCards = async () => {
     const { data } = await getFetch(baseUrl)

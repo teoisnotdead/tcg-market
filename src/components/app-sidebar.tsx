@@ -22,16 +22,16 @@ import { useEffect } from 'react'
 import { useUser } from '../context/UserProvider'
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { getDataFromLocalStorage } = useUser()
+  const { getUserData, name, email } = useUser()
 
   useEffect(() => {
-    getDataFromLocalStorage()
+    getUserData()
   }, [])
 
   const data = {
     user: {
-      name: getDataFromLocalStorage().name,
-      email: getDataFromLocalStorage().email,
+      name: name || "Cargando...",
+      email: email || "Cargando...",
       avatar: "/io.webp",
     },
     teams: [
@@ -65,7 +65,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         items: [
           {
             title: "Crear nueva venta",
-            url: "#",
+            url: "/cuenta/nueva-venta",
           },
           {
             title: "Mis ventas",

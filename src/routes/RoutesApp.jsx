@@ -1,4 +1,5 @@
 import { Routes, Route } from 'react-router-dom'
+import { ProfileLayout } from '../layouts/ProfileLayout'
 import { Home } from '../pages/Home'
 import { Register } from '../pages/Register'
 import { Login } from '../pages/Login'
@@ -10,47 +11,56 @@ import { useUser } from '../context/UserProvider'
 import { AuthGuard } from '../guard/AuthGuard'
 import { FooterSection } from '../components/FooterSection'
 import { NotFound } from '../pages/NotFound'
+import { NewSale } from '../pages/NewSale'
 
 export const RoutesApp = () => {
   const { token } = useUser()
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <div className="flex-grow">
+    <div className='flex flex-col min-h-screen'>
+      <div className='flex-grow'>
         <Routes>
           <Route
-            path="/registrar"
+            path='/registrar'
             element={
-              <AuthGuard hasToken={!token} redirect="/cuenta">
+              <AuthGuard hasToken={!token} redirect='/cuenta'>
                 <Register />
               </AuthGuard>
             }
           />
           <Route
-            path="/login"
+            path='/login'
             element={
-              <AuthGuard hasToken={!token} redirect="/cuenta">
+              <AuthGuard hasToken={!token} redirect='/cuenta'>
                 <Login />
               </AuthGuard>
             }
           />
+          {/* ✅ Rutas bajo /cuenta ahora están bien definidas */}
           <Route
-            path="/cuenta"
+            path='/cuenta/*'
             element={
-              <AuthGuard hasToken={token} redirect="/login">
-                <Profile />
+              <AuthGuard hasToken={token} redirect='/login'>
+                <ProfileLayout />
               </AuthGuard>
             }
-          />
-          <Route path="/" element={<Home />} />
-          <Route path="/cart" element={<Cart />} />
-          <Route path="*" element={<Marketplace />} />
-          <Route path="/card/:id" element={<CardDetails />} />
-          <Route path="*" element={<NotFound />} />
+          >
+            <Route index element={<Profile />} />
+            <Route path='nueva-venta' element={<NewSale />} />
+          </Route>
+
+          {/* ✅ Rutas principales */}
+          <Route path='/' element={<Home />} />
+          <Route path='/cart' element={<Cart />} />
+          <Route path='/marketplace' element={<Marketplace />} />
+          <Route path='/card/:id' element={<CardDetails />} />
+
+          {/* ✅ Página 404 correctamente definida */}
+          <Route path='*' element={<NotFound />} />
         </Routes>
       </div>
 
-      <FooterSection />
+      {!window.location.pathname.startsWith('/cuenta') && <FooterSection />}
     </div>
   )
 }

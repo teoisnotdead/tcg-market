@@ -2,7 +2,7 @@ import { NavLink } from "react-router-dom";
 
 export const HeroSection: React.FC = () => {
   return (
-    <section className="text-white text-center py-16 px-6 mt-5">
+    <section className="text-white text-center py-10 px-6 mt-5">
       <h1 className="text-4xl md:text-5xl font-extrabold uppercase">
         Haz crecer tu colección hoy
       </h1>

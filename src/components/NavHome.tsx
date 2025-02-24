@@ -10,16 +10,15 @@ const navLinks = [
 ];
 
 export const NavHome = (): JSX.Element => {
-  const { getDataFromLocalStorage } = useUser();
+  const { name } = useUser()
   const [dataUser, setDataUser] = useState<{ name: string } | null>(null);
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    const userData = getDataFromLocalStorage();
-    if (userData.token) {
-      setDataUser({ name: userData.name });
+    if (name) {
+      setDataUser({ name })
     }
-  }, []);
+  }, [name])
 
   const logo = "/TCG-Market-logo.png";
 
