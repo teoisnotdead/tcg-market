@@ -8,6 +8,8 @@ export interface UserContextType {
   getUserData: () => Promise<void>
   createSale: (saleData: SaleData) => Promise<SaleResponse>
   getUserStats: () => Promise<void>
+  getActiveSales: () => Promise<SaleResponse>
+  getAllSales: () => Promise<SaleResponse>
   isLoading: boolean
   hasError: boolean
   userStats: UserStats | null

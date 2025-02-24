@@ -7,7 +7,7 @@ export const Profile = () => {
 
   return (
     <div className='min-h-[100vh] flex-1 p-6'>
-      <h1 className='text-2xl font-bold mb-6'>Hola {name}!</h1>
+      <h1 className='text-2xl font-bold mb-6'>¡Hola {name}!</h1>
 
       {!userStats ? (
         // Skeletons mientras carga
