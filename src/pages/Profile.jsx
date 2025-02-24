@@ -1,9 +1,14 @@
+import { useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useUser } from '../context/UserProvider'
 
 export const Profile = () => {
-  const { userStats, name } = useUser()
+  const { userStats, name, getUserStats } = useUser()
+
+  useEffect(() => {
+    getUserStats()
+  }, [])
 
   return (
     <div className='min-h-[100vh] flex-1 p-6'>

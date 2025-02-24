@@ -48,15 +48,6 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   };
 
   /**
-   * ✅ Ejecutar `getUserStats` cuando haya un token válido
-   */
-  useEffect(() => {
-    if (token) {
-      getUserStats();
-    }
-  }, [token]);
-
-  /**
    * ✅ Función auxiliar para peticiones de autenticación (login/register)
    */
   const authRequest = async (url: string, body: object): Promise<AuthResponse | null> => {
@@ -184,7 +175,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const getActiveSales = async (): Promise<SaleResponse> => {
     if (!token) return { hasError: true, message: "Usuario no autenticado" };
 
-    const url = `${baseUrl}/active-sales`;
+    const url = `${baseUrl}/sales/active-sales`;
     const headers = { headers: { Authorization: `Bearer ${token}` } };
 
     const result = await getFetch(url, headers);
@@ -202,7 +193,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const getAllSales = async (): Promise<SaleResponse> => {
     if (!token) return { hasError: true, message: "Usuario no autenticado" };
 
-    const url = `${baseUrl}/all-sales`;
+    const url = `${baseUrl}/sales/all-sales`;
     const headers = { headers: { Authorization: `Bearer ${token}` } };
 
     const result = await getFetch(url, headers);

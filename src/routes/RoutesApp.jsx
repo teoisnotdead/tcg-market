@@ -12,6 +12,8 @@ import { AuthGuard } from '../guard/AuthGuard'
 import { FooterSection } from '../components/FooterSection'
 import { NotFound } from '../pages/NotFound'
 import { NewSale } from '../pages/NewSale'
+import { ActiveSales } from '../pages/ActiveSales'
+import { SalesHistory } from '../pages/SalesHistory'
 
 export const RoutesApp = () => {
   const { token } = useUser()
@@ -47,6 +49,8 @@ export const RoutesApp = () => {
           >
             <Route index element={<Profile />} />
             <Route path='nueva-venta' element={<NewSale />} />
+            <Route path='mis-ventas' element={<ActiveSales />} />
+            <Route path='historial' element={<SalesHistory />} />
           </Route>
 
           {/* ✅ Rutas principales */}

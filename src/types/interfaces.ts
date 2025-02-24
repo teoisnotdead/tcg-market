@@ -34,11 +34,13 @@ export interface AuthResponse {
 }
 
 export interface SaleData {
+  id: string
   name: string
   description: string
   price: number
   image_url: string
   quantity: number
+  status: string
 }
 
 export interface SaleResponse {

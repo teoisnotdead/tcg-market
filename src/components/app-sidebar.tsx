@@ -44,13 +44,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     navMain: [
       {
         title: "Perfil",
-        url: "#",
+        url: "/cuenta",
         icon: UserPen,
         isActive: true,
         items: [
           {
             title: "General",
-            url: "#"
+            url: "/cuenta"
           },
           {
             title: "Configuración",
@@ -69,11 +69,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           },
           {
             title: "Mis ventas",
-            url: "#",
+            url: "/cuenta/mis-ventas",
           },
           {
             title: "Historial de ventas",
-            url: "#",
+            url: "/cuenta/historial",
           },
         ],
       },
