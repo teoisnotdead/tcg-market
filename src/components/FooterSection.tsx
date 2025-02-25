@@ -8,22 +8,6 @@ export const FooterSection: React.FC = () => {
       <img src="./TCG-Market-logo.png" alt="Logo" className="w-60 h-auto" />
       {/* 
 
-      <nav className="mt-4 flex justify-center space-x-6 text-sm">
-        <Link to="/sobre-nosotros" className="hover:text-[#F19F00] transition-all">
-          Sobre nosotros
-        </Link>
-        <Link to="/terminos" className="hover:text-[#F19F00] transition-all">
-          Términos
-        </Link>
-        <Link to="/contacto" className="hover:text-[#F19F00] transition-all">
-          Contacto
-        </Link>
-        <Link to="/privacidad" className="hover:text-[#F19F00] transition-all">
-          Privacidad
-        </Link>
-      </nav> 
-      */}
-
       {/* Íconos de redes sociales con Lucide */}
       <div className="flex justify-center space-x-6 mt-6 text-2xl">
         <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-[#F19F00] transition-all">
@@ -38,8 +22,11 @@ export const FooterSection: React.FC = () => {
       </div>
 
       {/* Texto de derechos */}
-      <p className="mt-6 text-xs text-gray-400">
-        © 2025 TCG MARKET. DESARROLLADO POR TEODEV. PROYECTO FINAL PARA DESAFÍO LATAM
+      <p className="mt-6 text-xs text-gray-400 uppercase">
+        <span className="text-[#F19F00]"></span>
+        © 2025 <span className="text-[#F19F00]">TCG MARKET</span>.
+        Desarrollado por <span className="text-[#F19F00]">Alfredo Saavedra </span> 
+        para <span className="text-[#F19F00]">Desafío Latam</span>.
       </p>
     </footer>
   );
