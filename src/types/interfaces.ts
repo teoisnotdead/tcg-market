@@ -1,5 +1,6 @@
 export interface UserContextType {
   token: string | null
+  userId: string | null
   email: string | null
   name: string | null
   login: (email: string, password: string) => Promise<void>
@@ -35,8 +36,10 @@ export interface AuthResponse {
 
 export interface SaleData {
   id: string
+  seller_id: string
   name: string
   description: string
+  seller_name: string
   price: number
   image_url: string
   quantity: number
@@ -50,23 +53,31 @@ export interface SaleResponse {
 }
 
 export interface CardTcgProps {
-  id: string;
-  image_url: string;
-  name: string;
-  description: string;
-  price: string;
-  link?: string;
+  id: string
+  image_url: string
+  name: string
+  description: string
+  price: string
+  link?: string
 }
 
 export interface ProductSectionProps {
-  title?: string;
+  title?: string
   products: {
-    id: string;
-    image_url: string;
-    description: string;
-    name: string;
-    price: string;
-    link?: string;
-  }[];
-  showMore?: boolean;
+    id: string
+    image_url: string
+    description: string
+    name: string
+    price: string
+    link?: string
+  }[]
+  showMore?: boolean
+}
+
+export interface Comment {
+  id: string
+  user_id: string
+  user_name: string
+  content: string
+  created_at: string
 }

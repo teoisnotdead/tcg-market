@@ -6,7 +6,6 @@ import { Login } from '../pages/Login'
 import { Cart } from '../pages/Cart'
 import { Profile } from '../pages/Profile'
 import { Marketplace } from '../pages/Marketplace'
-import { CardDetails } from '../pages/CardDetails'
 import { useUser } from '../context/UserProvider'
 import { AuthGuard } from '../guard/AuthGuard'
 import { FooterSection } from '../components/FooterSection'
@@ -14,6 +13,7 @@ import { NotFound } from '../pages/NotFound'
 import { NewSale } from '../pages/NewSale'
 import { ActiveSales } from '../pages/ActiveSales'
 import { SalesHistory } from '../pages/SalesHistory'
+import { SaleDetail } from '../pages/SaleDetail'
 
 export const RoutesApp = () => {
   const { token } = useUser()
@@ -55,7 +55,7 @@ export const RoutesApp = () => {
           <Route path='/' element={<Home />} />
           <Route path='/cart' element={<Cart />} />
           <Route path='/marketplace' element={<Marketplace />} />
-          <Route path='/card/:id' element={<CardDetails />} />
+          <Route path='/card/:id' element={<SaleDetail />} />
 
           <Route path='*' element={<NotFound />} />
         </Routes>

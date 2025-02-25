@@ -1,4 +1,5 @@
 import * as React from "react"
+import { Link } from "react-router-dom"
 import {
   BadgeCheck,
   GalleryVerticalEnd,
@@ -101,7 +102,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenu>
           <SidebarMenu>
             <SidebarMenuButton size="lg" asChild>
-              <a href="#">
+              <Link to={'/cuenta'}>
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
                   <GalleryVerticalEnd className="size-4" />
                 </div>
@@ -109,7 +110,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   <span className="font-semibold">Mi cuenta</span>
                   <span className="text-xs text-muted-foreground">Plan básico</span>
                 </div>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenu>
         </SidebarMenu>

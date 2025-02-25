@@ -10,6 +10,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [email, setEmail] = useState<string | null>(null);
   const [name, setName] = useState<string | null>(null);
   const [userStats, setUserStats] = useState<UserStats | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
 
   const { isLoading, hasError, getFetch } = useFetch();
   const navigate = useNavigate();
@@ -134,6 +135,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     const { data } = await getFetch(url, headers);
 
     if (data) {
+      setUserId(data.id);
       setEmail(data.email);
       setName(data.name);
       localStorage.setItem("email", data.email);
@@ -210,6 +212,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     <UserContext.Provider
       value={{
         token,
+        userId,
         email,
         name,
         login,
