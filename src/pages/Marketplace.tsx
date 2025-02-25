@@ -21,7 +21,7 @@ export const Marketplace = () => {
   }, [])
 
   return (
-    <>
+    <div className='mx-auto max-w-7xl'>
       <NavHome />
       {isLoading ? (
         <div className="flex items-center justify-center pt-10">
@@ -35,7 +35,7 @@ export const Marketplace = () => {
         />
       )}
 
-    </>
+    </div>
   )
 };
 

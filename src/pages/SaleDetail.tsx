@@ -15,7 +15,7 @@ export const SaleDetail = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState<string>("");
-  const { addToCart } = useCart();
+  const { addToCart, removeFromCart, cart } = useCart();
   const { userId, token } = useUser();
 
   // ✅ Obtener datos de la venta
@@ -78,36 +78,40 @@ export const SaleDetail = () => {
 
   if (loading) {
     return (
-      <>
+      <div className="mx-auto max-w-7xl">
         <NavHome />
         <div className="flex justify-center items-center h-[80vh]">
           <Skeleton className="w-[400px] h-[500px] rounded-lg" />
         </div>
-      </>
+      </div>
     );
   }
 
   if (!sale) {
     return (
-      <>
+      <div className="mx-auto max-w-7xl">
         <NavHome />
         <p className="text-center text-gray-400">Venta no encontrada.</p>
-      </>
+      </div>
     );
   }
 
   const isOwner = sale.seller_id === userId;
+  
+
+  // ✅ Buscar cuántas unidades hay en el carrito
+  const itemInCart = cart.find((item) => item.id === sale.id);
+  const cartQuantity = itemInCart ? itemInCart.count : 0;
+  const stockDisponible = sale.quantity - cartQuantity;
 
   return (
-    <>
+    <div className="mx-auto max-w-7xl">
       <NavHome />
-      <div className="flex flex-col md:flex-row items-center justify-center min-h-[70vh] px-6">
-        {/* ✅ Imagen */}
+      <div className="flex flex-col md:flex-row items-center justify-center min-h-[70vh] px-6 mt-3.5">
         <div className="w-full md:w-[400px]">
           <img src={sale.image_url} alt={sale.name} className="w-full rounded-lg shadow-lg" />
         </div>
 
-        {/* ✅ Detalles de la venta */}
         <div className="w-full md:w-[500px] md:ml-10 mt-6 md:mt-0 flex flex-col gap-4">
           <h1 className="text-3xl font-bold text-[#F19F00]">{sale.name}</h1>
           <p className="text-gray-300">{sale.description}</p>
@@ -128,30 +132,41 @@ export const SaleDetail = () => {
           {isOwner ? (
             <p className="text-red-500 font-semibold mt-4">No puedes comprar tu propia carta.</p>
           ) : (
-            <Button
-              onClick={() =>
-                addToCart({
-                  id: sale.id ?? "",
-                  name: sale.name,
-                  description: sale.description,
-                  price: sale.price,
-                  image_url: sale.image_url,
-                  quantity: sale.quantity,
-                  count: 1,
-                })
-              }
-              className="bg-[#F19F00] hover:bg-[#d98c00] text-white w-full mt-4 py-3 text-lg"
-              disabled={sale.status !== "available"}
-            >
-              {sale.status === "available" ? "Agregar al carrito" : "No disponible"}
-            </Button>
+            <>
+              <Button
+                onClick={() =>
+                  addToCart({
+                    id: sale.id ?? "",
+                    name: sale.name,
+                    price: sale.price,
+                    image_url: sale.image_url,
+                    quantity: sale.quantity,
+                    count: 1,
+                  })
+                }
+                className="bg-[#F19F00] hover:bg-[#d98c00] text-white w-full mt-4 py-3 text-lg"
+                disabled={stockDisponible === 0 || sale.status !== "available"}
+              >
+                {stockDisponible === 0 ? "Stock agotado" : "Agregar al carrito"}
+              </Button>
+              {cartQuantity > 0 && (
+                <Button
+                  onClick={() => {
+                    if (!sale.id) return;
+                    removeFromCart(sale.id);
+                  }}
+                  className="bg-red-600 hover:bg-red-700 text-white w-full mt-2 py-2 text-sm"
+                >
+                  Remover del carrito
+                </Button>
+              )}
+            </>
           )}
         </div>
       </div>
 
       {/* ✅ Sección de comentarios */}
-      <div className="max-w-3xl mx-auto px-6">
-        <hr className="border-gray-300 border-1 w-full my-4" />
+      <div className="max-w-3xl mx-auto px-6 mt-8">
         <h2 className="text-lg font-bold mb-4">Comentarios</h2>
 
         {/* ✅ Formulario para agregar comentarios (solo si está autenticado) */}
@@ -207,6 +222,6 @@ export const SaleDetail = () => {
 
 
       </div>
-    </>
+    </div>
   );
 };
