@@ -8,7 +8,7 @@ export const Marketplace = () => {
   const { isLoading, getFetch } = useFetch()
   const [products, setProducts] = useState([])
 
-  const baseUrl = 'http://localhost:3000/sales'
+  const baseUrl = 'https://tcg-market-api.onrender.com/sales'
 
   const getCards = async () => {
     const { data } = await getFetch(baseUrl)

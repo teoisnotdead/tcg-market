@@ -22,7 +22,7 @@ export const SaleDetail = () => {
   useEffect(() => {
     const fetchSale = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/sales/${id}`);
+        const response = await fetch(`https://tcg-market-api.onrender.com/sales/${id}`);
         if (!response.ok) throw new Error("Venta no encontrada");
         const data = await response.json();
         setSale(data);
@@ -40,7 +40,7 @@ export const SaleDetail = () => {
   useEffect(() => {
     const fetchComments = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/comments/${id}`);
+        const response = await fetch(`https://tcg-market-api.onrender.com/comments/${id}`);
         if (!response.ok) throw new Error("Error al obtener comentarios");
         const data = await response.json();
         setComments(data);
@@ -57,7 +57,7 @@ export const SaleDetail = () => {
     if (!newComment.trim()) return;
 
     try {
-      const response = await fetch(`http://localhost:3000/comments`, {
+      const response = await fetch(`https://tcg-market-api.onrender.com/comments`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

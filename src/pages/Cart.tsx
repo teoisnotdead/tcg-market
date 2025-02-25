@@ -25,7 +25,7 @@ export const Cart = () => {
 
     setIsProcessing(true)
     try {
-      const response = await getFetch('http://localhost:5000/api/checkouts', {
+      const response = await getFetch('https://tcg-market-api.onrender.com/api/checkouts', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
