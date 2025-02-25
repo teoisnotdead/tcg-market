@@ -1,5 +1,5 @@
 import { RoutesApp } from './routes/RoutesApp.jsx'
-import { CartProvider } from './context/CartProvider.jsx'
+import { CartProvider } from './context/CartProvider.tsx'
 import { UserProvider } from './context/UserProvider.tsx'
 import { ThemeProvider } from "@/components/theme-provider"
 

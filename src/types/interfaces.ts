@@ -35,15 +35,15 @@ export interface AuthResponse {
 }
 
 export interface SaleData {
-  id: string
-  seller_id: string
+  id?: string
+  seller_id?: string
   name: string
   description: string
-  seller_name: string
+  seller_name?: string
   price: number
   image_url: string
   quantity: number
-  status: string
+  status?: string
 }
 
 export interface SaleResponse {
@@ -80,4 +80,22 @@ export interface Comment {
   user_name: string
   content: string
   created_at: string
+}
+
+export interface CartItem {
+  id: string
+  name: string
+  price: number
+  image_url: string
+  quantity: number
+  count: number
+  description?: string
+}
+
+export interface CartContextType {
+  cart: CartItem[]
+  total: number
+  addToCart: (item: CartItem) => void
+  removeFromCart: (id: string) => void
+  clearCart: () => void
 }

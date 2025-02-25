@@ -1,9 +1,8 @@
 import { useFetch } from '../hooks/useFetch'
 import { useUser } from '../context/UserProvider'
-import { useCart } from '../context/CartProvider'
+import { useCart } from '../context/CartProvider.tsx'
 import { toLocalString } from '../utils/toLocalString'
 import { NavHome } from '../components/NavHome'
-// import { Spinner } from '../components/Spinner'
 
 export const Cart = () => {
   const { data, isLoading, hasError, getFetch } = useFetch()
@@ -44,14 +43,14 @@ export const Cart = () => {
         <h2 className='text-2xl font-bold text-white'>Carrito de compras</h2>
         <div className='grid grid-cols-1 gap-4 mt-5 h-full'>
           {cart.length > 0 ? (
-            cart.map(({ id, name, img, price, count }) => (
+            cart.map(({ id, name, image_url, price, count }) => (
               <div
                 key={id}
                 className='bg-gray-100 flex items-center justify-between p-4 rounded shadow-md'
               >
                 <div className='flex items-center'>
                   <img
-                    src={img}
+                    src={image_url}
                     alt={name}
                     className='w-24 h-24 object-cover rounded'
                   />

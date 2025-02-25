@@ -129,7 +129,17 @@ export const SaleDetail = () => {
             <p className="text-red-500 font-semibold mt-4">No puedes comprar tu propia carta.</p>
           ) : (
             <Button
-              onClick={() => addToCart(sale)}
+              onClick={() =>
+                addToCart({
+                  id: sale.id ?? "",
+                  name: sale.name,
+                  description: sale.description,
+                  price: sale.price,
+                  image_url: sale.image_url,
+                  quantity: sale.quantity,
+                  count: 1,
+                })
+              }
               className="bg-[#F19F00] hover:bg-[#d98c00] text-white w-full mt-4 py-3 text-lg"
               disabled={sale.status !== "available"}
             >
