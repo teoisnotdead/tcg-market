@@ -13,7 +13,6 @@ export const Marketplace = () => {
   const getCards = async () => {
     const { data } = await getFetch(baseUrl)
     setProducts(data)
-    console.log(data)
   }
 
   useEffect(() => {

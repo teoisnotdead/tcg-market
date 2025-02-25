@@ -11,6 +11,7 @@ export interface UserContextType {
   getUserStats: () => Promise<void>
   getActiveSales: () => Promise<SaleResponse>
   getAllSales: () => Promise<SaleResponse>
+  getAllPurchases: () => Promise<SaleResponse>
   isLoading: boolean
   hasError: boolean
   userStats: UserStats | null
@@ -37,6 +38,8 @@ export interface AuthResponse {
 export interface SaleData {
   id?: string
   seller_id?: string
+  created_at?: string
+  sale_id?: string
   name: string
   description: string
   seller_name?: string

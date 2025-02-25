@@ -189,6 +189,21 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     return { hasError: false, data: result.data };
   };
 
+  const getAllPurchases = async (): Promise<SaleResponse> => {
+    if (!token) return { hasError: true, message: "Usuario no autenticado" };
+
+    const url = `${baseUrl}/purchases`;
+    const headers = { headers: { Authorization: `Bearer ${token}` } };
+
+    const result = await getFetch(url, headers);
+
+    if (result.hasError) {
+      return { hasError: true, message: "Error al obtener compras realizadas" };
+    }
+
+    return { hasError: false, data: result.data };
+  };
+
   /**
    * ✅ Obtener todas las ventas del usuario
    */
@@ -223,6 +238,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         getUserStats,
         getActiveSales,
         getAllSales,
+        getAllPurchases,
         userStats,
         isLoading,
         hasError,

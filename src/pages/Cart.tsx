@@ -20,37 +20,45 @@ export const Cart = () => {
 
   const handlePay = async () => {
     if (!token) {
-      toast.error('Debes iniciar sesión para continuar.')
-      return
+      toast.error('Debes iniciar sesión para continuar.');
+      return;
     }
 
-    setIsProcessing(true)
+    setIsProcessing(true);
+
     try {
-      const response = await getFetch('https://tcg-market-api.onrender.com/api/checkouts', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ cart }),
-      })
+      for (const item of cart) {
+        const response = await getFetch('https://tcg-market-api.onrender.com/sales/checkout', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            sale_id: item.id, // Usamos `sale_id` como espera la API
+            quantity: item.count, // La cantidad seleccionada
+          }),
+        });
 
-      if (response.hasError) {
-        toast.error('Error en el pago', {
-          description: 'Inténtalo nuevamente.',
-        })
-      } else {
-        toast.success('Pago exitoso', {
-          description: 'Gracias por tu compra.',
-        })
-        clearCart()
+        if (response.hasError) {
+          toast.error(`Error al comprar ${item.name}`, {
+            description: response.message || 'Inténtalo nuevamente.',
+          });
+          continue; // Saltamos este producto y seguimos con los demás
+        }
+
+        toast.success(`Compra exitosa: ${item.name}`, {
+          description: `Se compraron ${item.count} unidades.`,
+        });
       }
+
+      clearCart(); // Limpiamos el carrito después de la compra
     } catch (error) {
-      toast.error('Error al procesar el pago.')
+      toast.error('Error al procesar el pago.');
     } finally {
-      setIsProcessing(false)
+      setIsProcessing(false);
     }
-  }
+  };
 
   return (
     <section className='mx-auto max-w-7xl'>

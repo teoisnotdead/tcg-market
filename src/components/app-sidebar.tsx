@@ -74,7 +74,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           },
           {
             title: "Historial de ventas",
-            url: "/cuenta/historial",
+            url: "/cuenta/historial-ventas",
           },
         ],
       },
@@ -85,11 +85,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         items: [
           {
             title: "Mis compras",
-            url: "#",
-          },
-          {
-            title: "Historial de compras",
-            url: "#",
+            url: "/cuenta/mis-compras",
           },
         ],
       },

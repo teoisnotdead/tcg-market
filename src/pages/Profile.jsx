@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useUser } from '../context/UserProvider'
+import { toLocalString } from '../utils/toLocalString'
 
 export const Profile = () => {
   const { userStats, name, getUserStats } = useUser()
@@ -40,7 +41,7 @@ export const Profile = () => {
             <CardContent>
               <p className='text-3xl font-bold'>{userStats.sales.sold}</p>
               <p className='text-muted-foreground'>
-                Total ganado: ${userStats.sales.total_earned}
+                Total ganado: {toLocalString(userStats.sales.total_earned)}
               </p>
             </CardContent>
           </Card>
@@ -54,7 +55,7 @@ export const Profile = () => {
                 {userStats.purchases.total_purchases}
               </p>
               <p className='text-muted-foreground'>
-                Total gastado: ${userStats.purchases.total_spent}
+                Total gastado: {toLocalString(userStats.purchases.total_spent)}
               </p>
             </CardContent>
           </Card>

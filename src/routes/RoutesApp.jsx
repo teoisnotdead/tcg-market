@@ -13,6 +13,7 @@ import { NotFound } from '../pages/NotFound'
 import { NewSale } from '../pages/NewSale'
 import { ActiveSales } from '../pages/ActiveSales'
 import { SalesHistory } from '../pages/SalesHistory'
+import { PurchasesHistory } from '../pages/PurchasesHistory'
 import { SaleDetail } from '../pages/SaleDetail'
 
 export const RoutesApp = () => {
@@ -49,7 +50,8 @@ export const RoutesApp = () => {
             <Route index element={<Profile />} />
             <Route path='nueva-venta' element={<NewSale />} />
             <Route path='mis-ventas' element={<ActiveSales />} />
-            <Route path='historial' element={<SalesHistory />} />
+            <Route path='historial-ventas' element={<SalesHistory />} />
+            <Route path='mis-compras' element={<PurchasesHistory />} />
           </Route>
 
           <Route path='/' element={<Home />} />

@@ -16,8 +16,6 @@ export const NavHome = (): JSX.Element => {
   const [dataUser, setDataUser] = useState<{ name: string } | null>(null);
   const [isOpen, setIsOpen] = useState(false);
 
-  console.log(cart);
-
   useEffect(() => {
     if (name) {
       setDataUser({ name });
