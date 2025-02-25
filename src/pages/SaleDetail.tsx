@@ -118,7 +118,7 @@ export const SaleDetail = () => {
           <p className="text-gray-300">{sale.description}</p>
 
           <div className="text-xl font-semibold">
-            Precio: <span className="text-white">${toLocalString(sale.price)}</span>
+            Precio: <span className="text-white">{toLocalString(sale.price)}</span>
           </div>
 
           <div className="text-md">
