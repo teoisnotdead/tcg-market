@@ -10,6 +10,7 @@ import { toast } from 'sonner'
 import { Toaster } from '@/components/ui/sonner'
 import { Skeleton } from '@/components/ui/skeleton'
 import { CartItem } from '../types/interfaces'
+import { Link } from 'react-router-dom'
 
 export const Cart = () => {
   const { cart, total, clearCart, removeFromCart } = useCart()
@@ -67,9 +68,10 @@ export const Cart = () => {
                   <div className='flex items-center gap-4'>
                     <img src={item.image_url} alt={item.name} className="w-20 h-auto rounded" />
                     <div className='flex-1'>
-                      <h3 className='font-bold text-white text-lg'>
-                        {item.name}
-                      </h3>
+                      <Link to={`/card/${item.id}`}>
+                        <h3 className='font-bold text-white text-lg'>
+                          {item.name}
+                        </h3></Link>
                       <p className='text-gray-400 text-sm'>
                         <strong>Código:</strong> {item.id}
                       </p>
