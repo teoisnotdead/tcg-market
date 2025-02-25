@@ -1,6 +1,6 @@
 import { Routes, Route } from 'react-router-dom'
 import { ProfileLayout } from '../layouts/ProfileLayout'
-import { Home } from '../pages/Home'
+import { Home } from '../pages/Home.tsx'
 import { Register } from '../pages/Register'
 import { Login } from '../pages/Login'
 import { Cart } from '../pages/Cart.tsx'

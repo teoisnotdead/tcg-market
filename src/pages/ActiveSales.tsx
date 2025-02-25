@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useUser } from "@/context/UserProvider";
 import { ProductSection } from "@/components/ProductSection";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 
 export const ActiveSales = () => {
@@ -9,28 +8,29 @@ export const ActiveSales = () => {
   const [products, setProducts] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
+  const itemsPerPage = 6;
 
   useEffect(() => {
     const fetchSales = async () => {
       setIsLoading(true);
       setError(null);
 
-      const response = await getActiveSales();
+      const response = await getActiveSales(itemsPerPage, (currentPage - 1) * itemsPerPage);
+
       if (response.hasError) {
-        setError(response.message ?? 'Ha ocurrido un error')
+        setError(response.message ?? 'Ha ocurrido un error');
       } else {
         setProducts(response.data || []);
+        setTotalPages(response.totalPages || 1);
       }
 
       setIsLoading(false);
     };
 
     fetchSales();
-  }, []);
-
-  if (isLoading) {
-    return <Skeleton className="w-full h-40 rounded-lg" />;
-  }
+  }, [currentPage]);
 
   if (error) {
     return (
@@ -42,10 +42,17 @@ export const ActiveSales = () => {
   }
 
   return (
-    <ProductSection
-      title="Tus Ventas Activas"
-      products={products}
-      showMore={false}
-    />
+    <div className="mx-auto max-w-7xl">
+      <ProductSection
+        title="Tus Ventas Activas"
+        products={products}
+        totalPages={totalPages}
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
+        isLoading={isLoading}
+        showMore={false}
+        skeletonCount={6}
+      />
+    </div>
   );
 };

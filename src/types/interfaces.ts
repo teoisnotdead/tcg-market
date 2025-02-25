@@ -9,7 +9,7 @@ export interface UserContextType {
   getUserData: () => Promise<void>
   createSale: (saleData: SaleData) => Promise<SaleResponse>
   getUserStats: () => Promise<void>
-  getActiveSales: () => Promise<SaleResponse>
+  getActiveSales: (limit: number, offset: number) => Promise<SaleResponse>
   getAllSales: () => Promise<SaleResponse>
   getAllPurchases: () => Promise<SaleResponse>
   isLoading: boolean
@@ -53,6 +53,7 @@ export interface SaleResponse {
   hasError: boolean
   message?: string
   data?: any
+  totalPages?: number
 }
 
 export interface CardTcgProps {

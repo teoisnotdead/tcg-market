@@ -1,40 +1,44 @@
+import { useState, useEffect } from "react";
 import { NavHome } from "@/components/NavHome";
 import { ProductSection } from "../components/ProductSection";
-// import { products } from '../mock/cards'
 import { useFetch } from "../hooks/useFetch";
-import { useState, useEffect } from "react";
+import { CardTcgProps } from "../types/interfaces";
 
 export const Marketplace = () => {
-  const { isLoading, getFetch } = useFetch()
-  const [products, setProducts] = useState([])
+  const { isLoading, getFetch } = useFetch();
+  const [products, setProducts] = useState<CardTcgProps[]>([]);
+  const [totalPages, setTotalPages] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6;
 
-  const baseUrl = 'https://tcg-market-api.onrender.com/sales'
+  const fetchProducts = async (page: number) => {
+    const offset = (page - 1) * itemsPerPage;
+    const response = await getFetch(`http://localhost:3000/sales?limit=${itemsPerPage}&offset=${offset}`);
+    console.log('response', response)
 
-  const getCards = async () => {
-    const { data } = await getFetch(baseUrl)
-    setProducts(data)
-  }
+    if (!response.hasError) {
+      // ✅ Aseguramos que `data` sea un array, evitando errores
+      setProducts(Array.isArray(response.data) ? response.data : []);
+      setTotalPages(response.totalPages || 1);
+    }
+  };
+
 
   useEffect(() => {
-    getCards()
-  }, [])
+    fetchProducts(currentPage);
+  }, [currentPage]);
 
   return (
     <div className='mx-auto max-w-7xl'>
       <NavHome />
-      {isLoading ? (
-        <div className="flex items-center justify-center pt-10">
-          <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-white" />
-        </div>
-      ) : (
-        <ProductSection
-          title="Marketplace"
-          products={products}
-          showMore={false}
-        />
-      )}
-
+      <ProductSection
+        title="Marketplace"
+        products={products}
+        totalPages={totalPages}
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
+        isLoading={isLoading}
+      />
     </div>
-  )
+  );
 };
-

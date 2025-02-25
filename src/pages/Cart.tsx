@@ -28,7 +28,7 @@ export const Cart = () => {
 
     try {
       for (const item of cart) {
-        const response = await getFetch('https://tcg-market-api.onrender.com/sales/checkout', {
+        const response = await getFetch('http://localhost:3000/sales/checkout', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

@@ -15,7 +15,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const { isLoading, hasError, getFetch } = useFetch();
   const navigate = useNavigate();
 
-  const baseUrl = "https://tcg-market-api.onrender.com";
+  const baseUrl = "http://localhost:3000";
 
   /**
    * ✅ Cargar datos de localStorage cuando se inicia la app
@@ -174,10 +174,10 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   /**
  * ✅ Obtener ventas activas del usuario
  */
-  const getActiveSales = async (): Promise<SaleResponse> => {
+  const getActiveSales = async (limit: number, offset: number): Promise<SaleResponse> => {
     if (!token) return { hasError: true, message: "Usuario no autenticado" };
 
-    const url = `${baseUrl}/sales/active-sales`;
+    const url = `${baseUrl}/sales/active-sales?limit=${limit}&offset=${offset}`;
     const headers = { headers: { Authorization: `Bearer ${token}` } };
 
     const result = await getFetch(url, headers);
@@ -186,8 +186,9 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       return { hasError: true, message: "Error al obtener ventas activas" };
     }
 
-    return { hasError: false, data: result.data };
+    return { hasError: false, data: result.data, totalPages: result.totalPages };
   };
+
 
   const getAllPurchases = async (): Promise<SaleResponse> => {
     if (!token) return { hasError: true, message: "Usuario no autenticado" };
