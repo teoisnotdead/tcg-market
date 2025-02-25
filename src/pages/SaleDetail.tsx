@@ -8,6 +8,7 @@ import { useUser } from "../context/UserProvider";
 import { NavHome } from "../components/NavHome";
 import { SaleData, Comment } from "../types/interfaces";
 import { toTimeAgo } from "../utils/toTimeAgo";
+import { toLocalString } from "../utils/toLocalString";
 
 export const SaleDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -117,7 +118,7 @@ export const SaleDetail = () => {
           <p className="text-gray-300">{sale.description}</p>
 
           <div className="text-xl font-semibold">
-            Precio: <span className="text-white">${sale.price.toLocaleString()}</span>
+            Precio: <span className="text-white">${toLocalString(sale.price)}</span>
           </div>
 
           <div className="text-md">
