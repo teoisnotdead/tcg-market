@@ -15,7 +15,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const { isLoading, hasError, getFetch } = useFetch();
   const navigate = useNavigate();
 
-  const baseUrl = "http://localhost:3000";
+  const baseUrl = "https://tcg-market-api.onrender.com";
 
   /**
    * ✅ Cargar datos de localStorage cuando se inicia la app
@@ -65,10 +65,11 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   /**
    * ✅ Guardar datos de usuario en `localStorage` y estado
    */
-  const setDataFromResponse = ({ email, name, token }: AuthResponse) => {
+  const setDataFromResponse = ({ email, name, token, userId }: AuthResponse) => {
     localStorage.setItem("token", token);
     localStorage.setItem("email", email);
     localStorage.setItem("name", name);
+    localStorage.setItem("userId", userId);
     setToken(token);
     setEmail(email);
     setName(name);
@@ -81,6 +82,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     localStorage.removeItem("token");
     localStorage.removeItem("email");
     localStorage.removeItem("name");
+    localStorage.removeItem("userId");
   };
 
   /**

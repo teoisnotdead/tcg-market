@@ -33,6 +33,7 @@ export interface AuthResponse {
   email: string
   name: string
   token: string
+  userId: string
 }
 
 export interface SaleData {

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -8,7 +8,12 @@ import { useUser } from "../context/UserProvider";
 import { NavHome } from "../components/NavHome";
 import { SaleData, Comment } from "../types/interfaces";
 import { toTimeAgo } from "../utils/toTimeAgo";
+import { toast } from "sonner";
 import { toLocalString } from "../utils/toLocalString";
+import { EditSaleDialog } from "@/components/EditSaleDialog";
+import { DeleteConfirmationDialog } from "@/components/DeleteConfirmationDialog";
+import { Toaster } from "@/components/ui/sonner";
+
 
 export const SaleDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -16,14 +21,83 @@ export const SaleDetail = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState<string>("");
+  const [localUserId, setLocalUserId] = useState<string | null>(null);
   const { addToCart, removeFromCart, cart } = useCart();
   const { userId, token } = useUser();
+  const [openDeleteModal, setOpenDeleteModal] = useState<boolean>(false);
+  const [openEditModal, setOpenEditModal] = useState<boolean>(false);
+  const navigate = useNavigate();
 
-  // ✅ Obtener datos de la venta
+  console.log('userId', userId);
+  console.log('userIdFromLocalStorage', localStorage.getItem('userId'));
+
+  const isOwner = (userId || localUserId) === sale?.seller_id;
+
+  // Handle Edit Sale
+  const handleEditSale = async (updatedData: SaleData) => {
+    try {
+      const response = await fetch(`https://tcg-market-api.onrender.com/sales/${sale?.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(updatedData),
+      });
+
+      if (!response.ok) throw new Error("Error al actualizar la venta");
+
+      setOpenEditModal(false);
+      setSale(updatedData);
+    } catch (error) {
+      console.error("Error al modificar la venta:", error);
+    }
+  };
+
+  // Handle Delete Sale
+  const handleDeleteSale = async () => {
+    setLoading(true);
+
+    try {
+      const response = await fetch(`https://tcg-market-api.onrender.com/sales/${sale?.id}`, {
+        method: 'DELETE',
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Error al eliminar la venta");
+      }
+
+      toast.success("Venta eliminada exitosamente", { description: "La venta fue eliminada correctamente." });
+      navigate('/cuenta/mis-ventas');
+    } catch (error: any) {
+      console.error(error);
+
+      const errorMessage = error instanceof Error ? error.message : "Hubo un error al intentar eliminar la venta";
+      toast.error("Error al eliminar la venta", { description: errorMessage });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    // Si userId no está disponible en el contexto, intentamos obtenerlo de localStorage.
+    if (!userId) {
+      const storedUserId = localStorage.getItem("userId");
+      if (storedUserId) {
+        setLocalUserId(storedUserId); // Actualizamos el estado local con el valor de localStorage
+      }
+    }
+  }, [userId]);
+
+  // Obtener datos de la venta
   useEffect(() => {
     const fetchSale = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/sales/${id}`);
+        const response = await fetch(`https://tcg-market-api.onrender.com/sales/${id}`);
         if (!response.ok) throw new Error("Venta no encontrada");
         const data = await response.json();
         setSale(data);
@@ -37,11 +111,11 @@ export const SaleDetail = () => {
     fetchSale();
   }, [id]);
 
-  // ✅ Obtener comentarios de la venta
+  // Obtener comentarios de la venta
   useEffect(() => {
     const fetchComments = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/comments/${id}`);
+        const response = await fetch(`https://tcg-market-api.onrender.com/comments/${id}`);
         if (!response.ok) throw new Error("Error al obtener comentarios");
         const data = await response.json();
         setComments(data);
@@ -53,12 +127,11 @@ export const SaleDetail = () => {
     fetchComments();
   }, [id]);
 
-  // ✅ Enviar comentario
   const handleAddComment = async () => {
     if (!newComment.trim()) return;
 
     try {
-      const response = await fetch(`http://localhost:3000/comments`, {
+      const response = await fetch(`https://tcg-market-api.onrender.com/comments`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -97,16 +170,14 @@ export const SaleDetail = () => {
     );
   }
 
-  const isOwner = sale.seller_id === userId;
-  
-
-  // ✅ Buscar cuántas unidades hay en el carrito
+  // Buscar cuántas unidades hay en el carrito
   const itemInCart = cart.find((item) => item.id === sale.id);
   const cartQuantity = itemInCart ? itemInCart.count : 0;
   const stockDisponible = sale.quantity - cartQuantity;
 
   return (
     <div className="mx-auto max-w-7xl">
+      <Toaster />
       <NavHome />
       <div className="flex flex-col md:flex-row items-center justify-center min-h-[70vh] px-6 mt-3.5">
         <div className="w-full md:w-[400px]">
@@ -129,9 +200,32 @@ export const SaleDetail = () => {
             Vendedor: <span className="font-semibold">{sale.seller_name}</span>
           </div>
 
-
           {isOwner ? (
-            <p className="text-red-500 font-semibold mt-4">No puedes comprar tu propia carta.</p>
+            <>
+              <EditSaleDialog
+                open={openEditModal}
+                onClose={() => setOpenEditModal(false)}
+                sale={sale}
+                onSave={handleEditSale}
+              />
+              <DeleteConfirmationDialog
+                open={openDeleteModal}
+                onClose={() => setOpenDeleteModal(false)}
+                onDelete={handleDeleteSale}
+              />
+              <Button
+                onClick={() => setOpenEditModal(true)}
+                className="bg-[#F19F00] hover:bg-[#d98c00] text-white w-full mt-4 py-3 text-lg"
+              >
+                Editar venta
+              </Button>
+              <Button
+                onClick={() => setOpenDeleteModal(true)}
+                className="bg-red-600 hover:bg-red-700 text-white w-full mt-2 py-2 text-sm"
+              >
+                Eliminar venta
+              </Button>
+            </>
           ) : (
             <>
               <Button
@@ -150,6 +244,7 @@ export const SaleDetail = () => {
               >
                 {stockDisponible === 0 ? "Stock agotado" : "Agregar al carrito"}
               </Button>
+
               {cartQuantity > 0 && (
                 <Button
                   onClick={() => {
@@ -166,11 +261,11 @@ export const SaleDetail = () => {
         </div>
       </div>
 
-      {/* ✅ Sección de comentarios */}
+      {/* Sección de comentarios */}
       <div className="max-w-3xl mx-auto px-6 mt-8">
         <h2 className="text-lg font-bold mb-4">Comentarios</h2>
 
-        {/* ✅ Formulario para agregar comentarios (solo si está autenticado) */}
+        {/* Formulario para agregar comentarios */}
         {token && (
           <div className="flex flex-col gap-2 mb-4">
             <Textarea
@@ -184,7 +279,7 @@ export const SaleDetail = () => {
           </div>
         )}
 
-        {/* ✅ Lista de comentarios */}
+        {/* Lista de comentarios */}
         <div className="space-y-4">
           {comments.length > 0 ? (
             comments.map((comment) => {
@@ -220,8 +315,6 @@ export const SaleDetail = () => {
             <p className="text-gray-500">No hay comentarios aún.</p>
           )}
         </div>
-
-
       </div>
     </div>
   );
