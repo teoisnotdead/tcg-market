@@ -33,7 +33,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     user: {
       name: name || "Cargando...",
       email: email || "Cargando...",
-      avatar: "/io.webp",
+      avatar: "/user.png",
     },
     teams: [
       {
@@ -53,10 +53,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             title: "General",
             url: "/cuenta"
           },
-          {
+          /* {
             title: "Configuración",
             url: "#",
-          },
+          }, */
         ],
       },
       {
