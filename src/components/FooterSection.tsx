@@ -1,11 +1,11 @@
-// import { Link } from "react-router-dom";
 import { Instagram, MessageCircle, Twitter } from "lucide-react";
+const logo = "/TCG-Market-logo.png";
 
 export const FooterSection: React.FC = () => {
   return (
     <footer className="text-white py-10 px-6 text-center flex flex-col items-center">
       {/* Logo */}
-      <img src="./TCG-Market-logo.png" alt="Logo" className="w-60 h-auto" />
+      <img src={logo} alt="logo" className="w-60 h-auto" />
       {/* 
 
       {/* Íconos de redes sociales con Lucide */}
@@ -25,7 +25,7 @@ export const FooterSection: React.FC = () => {
       <p className="mt-6 text-xs text-gray-400 uppercase">
         <span className="text-[#F19F00]"></span>
         © 2025 <span className="text-[#F19F00]">TCG MARKET</span>.
-        Desarrollado por <span className="text-[#F19F00]">Alfredo Saavedra </span> 
+        Desarrollado por <span className="text-[#F19F00]">Alfredo Saavedra </span>
         para <span className="text-[#F19F00]">Desafío Latam</span>.
       </p>
     </footer>

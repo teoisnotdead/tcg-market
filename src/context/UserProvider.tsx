@@ -15,7 +15,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const { isLoading, hasError, getFetch } = useFetch();
   const navigate = useNavigate();
 
-  const baseUrl = "https://tcg-market-api.onrender.com";
+  const baseUrl = "http://localhost:3000";
 
   /**
    * ✅ Cargar datos de localStorage cuando se inicia la app

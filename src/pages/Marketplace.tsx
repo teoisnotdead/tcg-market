@@ -13,7 +13,7 @@ export const Marketplace = () => {
 
   const fetchProducts = async (page: number) => {
     const offset = (page - 1) * itemsPerPage;
-    const response = await getFetch(`https://tcg-market-api.onrender.com/sales?limit=${itemsPerPage}&offset=${offset}`);
+    const response = await getFetch(`http://localhost:3000/sales?limit=${itemsPerPage}&offset=${offset}`);
     console.log('response', response)
 
     if (!response.hasError) {
