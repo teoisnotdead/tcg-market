@@ -1,7 +1,7 @@
 import { createContext, useReducer, useContext, useEffect, ReactNode, useCallback, useMemo, useRef } from "react";
 import { UserContextType, AuthResponse, SaleData, SaleResponse, UserStats } from "../types/interfaces";
 import { ApiService } from "../services/api";
-import { useUserStats, useActiveSales, useAllSales, useAllPurchases, useCreateSale } from "../hooks/useQueries";
+import { useActiveSales, useAllSales, useAllPurchases, useCreateSale } from "../hooks/useQueries";
 
 // Definición del estado
 interface UserState {
