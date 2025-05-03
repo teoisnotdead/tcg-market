@@ -80,4 +80,49 @@ export class ApiService {
     });
     return response.json();
   }
+
+  static async getSaleDetail(id: string) {
+    const response = await fetch(`${BASE_URL}/sales/${id}`);
+    return response.json();
+  }
+
+  static async getComments(saleId: string) {
+    const response = await fetch(`${BASE_URL}/comments/${saleId}`);
+    return response.json();
+  }
+
+  static async addComment(token: string, saleId: string, content: string) {
+    const response = await fetch(`${BASE_URL}/comments`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ sale_id: saleId, content }),
+    });
+    return response.json();
+  }
+
+  static async editSale(token: string, saleId: string, updatedData: any) {
+    const response = await fetch(`${BASE_URL}/sales/${saleId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(updatedData),
+    });
+    return response.json();
+  }
+
+  static async deleteSale(token: string, saleId: string) {
+    const response = await fetch(`${BASE_URL}/sales/${saleId}`, {
+      method: 'DELETE',
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.json();
+  }
 } 

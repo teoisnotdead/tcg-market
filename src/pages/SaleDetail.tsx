@@ -13,9 +13,7 @@ import { toLocalString } from "../utils/toLocalString";
 import { EditSaleDialog } from "@/components/EditSaleDialog";
 import { DeleteConfirmationDialog } from "@/components/DeleteConfirmationDialog";
 import { Toaster } from "@/components/ui/sonner";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-
-const API_URL = import.meta.env.VITE_API_URL;
+import { useSaleDetail, useComments, useAddComment, useEditSale, useDeleteSale } from "../hooks/useQueries";
 
 export const SaleDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -25,102 +23,42 @@ export const SaleDetail = () => {
   const [openDeleteModal, setOpenDeleteModal] = useState<boolean>(false);
   const [openEditModal, setOpenEditModal] = useState<boolean>(false);
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
 
-  // Query para obtener los datos de la venta
-  const { data: sale, isLoading } = useQuery({
-    queryKey: ['sale', id],
-    queryFn: async () => {
-      const response = await fetch(`${API_URL}/sales/${id}`);
-      if (!response.ok) throw new Error("Venta no encontrada");
-      return response.json();
-    }
-  });
-
-  // Query para obtener los comentarios
-  const { data: comments = [], refetch: refetchComments } = useQuery({
-    queryKey: ['comments', id],
-    queryFn: async () => {
-      const response = await fetch(`${API_URL}/comments/${id}`);
-      if (!response.ok) throw new Error("Error al obtener comentarios");
-      return response.json();
-    }
-  });
-
-  // Mutation para agregar comentario
-  const addCommentMutation = useMutation({
-    mutationFn: async (content: string) => {
-      const response = await fetch(`${API_URL}/comments`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ sale_id: id, content }),
-      });
-      if (!response.ok) throw new Error("Error al agregar comentario");
-      return response.json();
-    },
-    onSuccess: () => {
-      refetchComments();
-      setNewComment("");
-    }
-  });
-
-  // Mutation para editar venta
-  const editSaleMutation = useMutation({
-    mutationFn: async (updatedData: SaleData) => {
-      const response = await fetch(`${API_URL}/sales/${sale?.id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(updatedData),
-      });
-      if (!response.ok) throw new Error("Error al actualizar la venta");
-      return response.json();
-    },
-    onSuccess: (data) => {
-      queryClient.setQueryData(['sale', id], data);
-      setOpenEditModal(false);
-    }
-  });
-
-  // Mutation para eliminar venta
-  const deleteSaleMutation = useMutation({
-    mutationFn: async () => {
-      const response = await fetch(`${API_URL}/sales/${sale?.id}`, {
-        method: 'DELETE',
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (!response.ok) throw new Error("Error al eliminar la venta");
-    },
-    onSuccess: () => {
-      toast.success("Venta eliminada exitosamente", { description: "La venta fue eliminada correctamente." });
-      navigate('/cuenta/mis-ventas');
-    }
-  });
+  // React Query hooks
+  const { data: sale, isLoading: isLoadingSale } = useSaleDetail(id!);
+  const { data: comments = [], isLoading: isLoadingComments } = useComments(id!);
+  const addCommentMutation = useAddComment(token, id!);
+  const editSaleMutation = useEditSale(token, id!);
+  const deleteSaleMutation = useDeleteSale(token, id!);
 
   const isOwner = userId === sale?.seller_id;
 
   const handleEditSale = (updatedData: SaleData) => {
-    editSaleMutation.mutate(updatedData);
+    editSaleMutation.mutate(updatedData, {
+      onSuccess: () => setOpenEditModal(false),
+      onError: () => toast.error("Error al modificar la venta"),
+    });
   };
 
   const handleDeleteSale = () => {
-    deleteSaleMutation.mutate();
+    deleteSaleMutation.mutate(undefined, {
+      onSuccess: () => {
+        toast.success("Venta eliminada exitosamente", { description: "La venta fue eliminada correctamente." });
+        navigate('/cuenta/mis-ventas');
+      },
+      onError: () => toast.error("Error al eliminar la venta"),
+    });
   };
 
   const handleAddComment = () => {
     if (!newComment.trim()) return;
-    addCommentMutation.mutate(newComment);
+    addCommentMutation.mutate(newComment, {
+      onSuccess: () => setNewComment(""),
+      onError: () => toast.error("Error al agregar comentario"),
+    });
   };
 
-  if (isLoading) {
+  if (isLoadingSale) {
     return (
       <div className="mx-auto max-w-7xl">
         <NavHome />
@@ -251,8 +189,10 @@ export const SaleDetail = () => {
 
         {/* Lista de comentarios */}
         <div className="space-y-4">
-          {comments.length > 0 ? (
-            comments.map((comment) => {
+          {isLoadingComments ? (
+            <p className="text-gray-500">Cargando comentarios...</p>
+          ) : comments.length > 0 ? (
+            comments.map((comment: any) => {
               const isUserComment = comment.user_id === userId;
               const isSellerComment = comment.user_id === sale.seller_id;
               let roleTag = "";

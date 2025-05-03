@@ -7,24 +7,25 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useNavigate } from "react-router-dom";
 import { toLocalString } from "../utils/toLocalString";
 import { toFormatDate } from "../utils/toFormatDate";
+import { useAllPurchases } from "../hooks/useQueries";
 
 export const PurchasesHistory = () => {
-  const { getAllPurchases } = useUser();
+  const { token } = useUser();
+  const { data, isLoading, isError } = useAllPurchases(token);
   const [sales, setSales] = useState<SaleData[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const navigate = useNavigate();
-  useEffect(() => {
-    const fetchSales = async () => {
-      setLoading(true);
-      const result = await getAllPurchases();
-      if (!result.hasError) {
-        setSales(result.data);
-      }
-      setLoading(false);
-    };
 
-    fetchSales();
-  }, []);
+  useEffect(() => {
+    if (isLoading) {
+      setLoading(true);
+      return;
+    }
+    if (data && !isError && Array.isArray(data.data)) {
+      setSales(data.data);
+    }
+    setLoading(false);
+  }, [data, isLoading, isError]);
 
   return (
     <div className="p-6">

@@ -12,7 +12,7 @@ export const useUserStats = (token: string | null) => {
 
 export const useActiveSales = (token: string | null, limit: number, offset: number) => {
   return useQuery({
-    queryKey: ['activeSales', limit, offset],
+    queryKey: ['activeSales', limit, offset, token],
     queryFn: () => ApiService.getActiveSales(token!, limit, offset),
     enabled: !!token,
   });
@@ -28,7 +28,7 @@ export const useAllSales = (token: string | null) => {
 
 export const useAllPurchases = (token: string | null) => {
   return useQuery({
-    queryKey: ['allPurchases'],
+    queryKey: ['allPurchases', token],
     queryFn: () => ApiService.getAllPurchases(token!),
     enabled: !!token,
   });
@@ -44,6 +44,52 @@ export const useCreateSale = () => {
       queryClient.invalidateQueries({ queryKey: ['userStats'] });
       queryClient.invalidateQueries({ queryKey: ['activeSales'] });
       queryClient.invalidateQueries({ queryKey: ['allSales'] });
+    },
+  });
+};
+
+export const useSaleDetail = (id: string) => {
+  return useQuery({
+    queryKey: ['saleDetail', id],
+    queryFn: () => ApiService.getSaleDetail(id),
+    enabled: !!id,
+  });
+};
+
+export const useComments = (saleId: string) => {
+  return useQuery({
+    queryKey: ['comments', saleId],
+    queryFn: () => ApiService.getComments(saleId),
+    enabled: !!saleId,
+  });
+};
+
+export const useAddComment = (token: string | null, saleId: string) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (content: string) => ApiService.addComment(token!, saleId, content),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['comments', saleId] });
+    },
+  });
+};
+
+export const useEditSale = (token: string | null, saleId: string) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (updatedData: SaleData) => ApiService.editSale(token!, saleId, updatedData),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['saleDetail', saleId] });
+    },
+  });
+};
+
+export const useDeleteSale = (token: string | null, saleId: string) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => ApiService.deleteSale(token!, saleId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['saleDetail', saleId] });
     },
   });
 }; 

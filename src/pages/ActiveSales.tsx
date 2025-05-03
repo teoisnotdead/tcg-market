@@ -2,9 +2,10 @@ import { useEffect, useState } from "react";
 import { useUser } from "@/context/UserProvider";
 import { ProductSection } from "@/components/ProductSection";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { useActiveSales } from "../hooks/useQueries";
 
 export const ActiveSales = () => {
-  const { getActiveSales } = useUser();
+  const { token } = useUser();
   const [products, setProducts] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -12,25 +13,23 @@ export const ActiveSales = () => {
   const [totalPages, setTotalPages] = useState<number>(1);
   const itemsPerPage = 6;
 
+  const { data, isLoading: queryLoading, isError } = useActiveSales(token, itemsPerPage, (currentPage - 1) * itemsPerPage);
+
   useEffect(() => {
-    const fetchSales = async () => {
-      setIsLoading(true);
+    setIsLoading(queryLoading);
+    if (queryLoading) return;
+    if (isError) {
+      setError('Ha ocurrido un error');
+      setProducts([]);
+      setTotalPages(1);
+      return;
+    }
+    if (data && Array.isArray(data.data)) {
+      setProducts(data.data);
+      setTotalPages(data.totalPages || 1);
       setError(null);
-
-      const response = await getActiveSales(itemsPerPage, (currentPage - 1) * itemsPerPage);
-
-      if (response.hasError) {
-        setError(response.message ?? 'Ha ocurrido un error');
-      } else {
-        setProducts(response.data || []);
-        setTotalPages(response.totalPages || 1);
-      }
-
-      setIsLoading(false);
-    };
-
-    fetchSales();
-  }, [currentPage]);
+    }
+  }, [data, queryLoading, isError]);
 
   if (error) {
     return (
