@@ -133,4 +133,14 @@ export class ApiService {
     });
     return response.json();
   }
+
+  static async getLatestProducts(limit: number) {
+    const response = await fetch(`${BASE_URL}/sales?limit=${limit}`);
+    return response.json();
+  }
+
+  static async getMarketplaceProducts(limit: number, offset: number) {
+    const response = await fetch(`${BASE_URL}/sales?limit=${limit}&offset=${offset}`);
+    return response.json();
+  }
 } 

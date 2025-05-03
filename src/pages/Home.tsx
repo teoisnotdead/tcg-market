@@ -1,24 +1,12 @@
-import { useState, useEffect } from "react";
-import { useFetch } from "../hooks/useFetch";
+import { useState } from "react";
 import { NavHome } from "../components/NavHome";
 import { HeroSection } from "../components/HeroSection";
 import { ProductSection } from "../components/ProductSection";
-import { CardTcgProps } from "../types/interfaces";
+import { useLatestProducts } from "../hooks/useQueries";
 
 export const Home: React.FC = () => {
-  const { isLoading, getFetch } = useFetch();
-  const [products, setProducts] = useState<CardTcgProps[]>([]);
-  const API_URL = import.meta.env.VITE_API_URL;
-  const baseUrl = `${API_URL}/sales?limit=3`;
-
-  const getCards = async () => {
-    const { data } = await getFetch(baseUrl);
-    setProducts(Array.isArray(data) ? data : []);
-  };
-
-  useEffect(() => {
-    getCards();
-  }, []);
+  const { data, isLoading } = useLatestProducts(3);
+  const products = Array.isArray(data?.data) ? data.data : [];
 
   return (
     <section className="mx-auto max-w-7xl">

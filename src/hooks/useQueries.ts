@@ -92,4 +92,18 @@ export const useDeleteSale = (token: string | null, saleId: string) => {
       queryClient.invalidateQueries({ queryKey: ['saleDetail', saleId] });
     },
   });
+};
+
+export const useLatestProducts = (limit: number) => {
+  return useQuery({
+    queryKey: ['latestProducts', limit],
+    queryFn: () => ApiService.getLatestProducts(limit),
+  });
+};
+
+export const useMarketplaceProducts = (limit: number, offset: number) => {
+  return useQuery({
+    queryKey: ['marketplaceProducts', limit, offset],
+    queryFn: () => ApiService.getMarketplaceProducts(limit, offset),
+  });
 }; 

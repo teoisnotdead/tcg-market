@@ -1,33 +1,14 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { NavHome } from "@/components/NavHome";
 import { ProductSection } from "../components/ProductSection";
-import { useFetch } from "../hooks/useFetch";
-import { CardTcgProps } from "../types/interfaces";
+import { useMarketplaceProducts } from "../hooks/useQueries";
 
 export const Marketplace = () => {
-  const { isLoading, getFetch } = useFetch();
-  const [products, setProducts] = useState<CardTcgProps[]>([]);
-  const [totalPages, setTotalPages] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
-  const API_URL = import.meta.env.VITE_API_URL;
-
-  const fetchProducts = async (page: number) => {
-    const offset = (page - 1) * itemsPerPage;
-    const response = await getFetch(`${API_URL}/sales?limit=${itemsPerPage}&offset=${offset}`);
-    console.log('response', response)
-
-    if (!response.hasError) {
-      // ✅ Aseguramos que `data` sea un array, evitando errores
-      setProducts(Array.isArray(response.data) ? response.data : []);
-      setTotalPages(response.totalPages || 1);
-    }
-  };
-
-
-  useEffect(() => {
-    fetchProducts(currentPage);
-  }, [currentPage]);
+  const { data, isLoading } = useMarketplaceProducts(itemsPerPage, (currentPage - 1) * itemsPerPage);
+  const products = Array.isArray(data?.data) ? data.data : [];
+  const totalPages = data?.totalPages || 1;
 
   return (
     <div className='mx-auto max-w-7xl'>
