@@ -28,7 +28,7 @@ export const FooterSection: React.FC = () => {
       <p className="mt-6 text-xs text-gray-400 uppercase">
         <span className="text-[#F19F00]"></span>
         © 2025 <span className="text-[#F19F00]">TCG MARKET</span>.
-        Desarrollado por <span className="text-[#F19F00]"><a href="https://teodev.cl" target="_blank" rel="noopener noreferrer" className="hover:text-[#F19F00] transition-all">Alfredo Saavedra</a> </span>
+        Desarrollado por <a href="https://teodev.cl" target="_blank" rel="noopener noreferrer" className="hover:text-[#F19F00] transition-all">Alfredo Saavedra</a>
         para <span className="text-[#F19F00]">Desafío Latam</span>.
       </p>
     </footer>
