@@ -9,17 +9,17 @@ import { BrowserRouter } from 'react-router-dom';
 function TcgMarketApp() {
   return (
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <UserProvider>
-          <CartProvider>
-            <main className='flex-grow'>
-              <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+      <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+        <BrowserRouter>
+          <UserProvider>
+            <CartProvider>
+              <main className='flex-grow'>
                 <RoutesApp />
-              </ThemeProvider>
-            </main>
-          </CartProvider>
-        </UserProvider>
-      </BrowserRouter>
+              </main>
+            </CartProvider>
+          </UserProvider>
+        </BrowserRouter>
+      </ThemeProvider>
     </QueryClientProvider>
   )
 }
