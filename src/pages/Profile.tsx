@@ -4,12 +4,12 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { useUser } from '../context/UserProvider'
 import { toLocalString } from '../utils/toLocalString'
 
-export const Profile = () => {
+export const Profile: React.FC = () => {
   const { userStats, name, getUserStats } = useUser()
 
   useEffect(() => {
     getUserStats()
-  }, [])
+  }, [getUserStats])
 
   return (
     <div className='min-h-[100vh] flex-1 p-6'>
@@ -63,4 +63,4 @@ export const Profile = () => {
       )}
     </div>
   )
-}
+} 

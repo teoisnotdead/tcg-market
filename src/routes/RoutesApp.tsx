@@ -16,7 +16,7 @@ import { SalesHistory } from '../pages/SalesHistory'
 import { PurchasesHistory } from '../pages/PurchasesHistory'
 import { SaleDetail } from '../pages/SaleDetail'
 
-export const RoutesApp = () => {
+export const RoutesApp: React.FC = () => {
   const { token } = useUser()
 
   return (
@@ -42,7 +42,7 @@ export const RoutesApp = () => {
           <Route
             path='/cuenta/*'
             element={
-              <AuthGuard hasToken={token} redirect='/login'>
+              <AuthGuard hasToken={!!token} redirect='/login'>
                 <ProfileLayout />
               </AuthGuard>
             }
@@ -66,4 +66,4 @@ export const RoutesApp = () => {
       {!window.location.pathname.startsWith('/cuenta') && <FooterSection />}
     </div>
   )
-}
+} 
