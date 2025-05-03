@@ -1,42 +1,84 @@
-
 // mock data
 
-export const loginResponse = {
+export interface LoginResponse {
+  code: number;
+  message: string;
+  data: {
+    token: string;
+    email: string;
+  };
+}
+
+export interface RegisterResponse {
+  code: number;
+  message: string;
+  data: {
+    token: string;
+    email: string;
+  };
+}
+
+export interface CartResponse {
+  code: number;
+  message: string;
+  data: {
+    cart: any[];
+    total: number;
+  };
+}
+
+export interface CheckoutResponse {
+  code: number;
+  message: string;
+  data: {
+    cart: any[];
+  };
+}
+
+export interface ProductMock {
+  id: string;
+  image: string;
+  title: string;
+  set: string;
+  price: string;
+}
+
+export const loginResponse: LoginResponse = {
   code: 200,
   message: 'OK',
   data: {
     token: 'token',
     email: 'emailMock@email.com',
   },
-}
+};
 
-export const registerResponse = {
+export const registerResponse: RegisterResponse = {
   code: 200,
   message: 'OK',
   data: {
     token: 'token',
     email: 'emailMock@email.com',
   },
-}
+};
 
-export const cartResponse = {
+export const cartResponse: CartResponse = {
   code: 200,
   message: 'OK',
   data: {
     cart: [],
     total: 0,
   },
-}
+};
 
-export const checkoutResponse = {
+export const checkoutResponse: CheckoutResponse = {
   code: 200,
   message: 'OK',
   data: {
     cart: [],
   },
-}
+};
 
-export const products = [
+export const products: ProductMock[] = [
   {
     id: "lucario-vstar",
     image: "/lucario.jpg",

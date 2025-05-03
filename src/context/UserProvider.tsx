@@ -1,4 +1,4 @@
-import { createContext, useReducer, useContext, useEffect, ReactNode, useCallback, useMemo } from "react";
+import { createContext, useReducer, useContext, useEffect, ReactNode, useCallback, useMemo, useRef } from "react";
 import { UserContextType, AuthResponse, SaleData, SaleResponse, UserStats } from "../types/interfaces";
 import { ApiService } from "../services/api";
 import { useUserStats, useActiveSales, useAllSales, useAllPurchases, useCreateSale } from "../hooks/useQueries";
@@ -19,7 +19,7 @@ interface UserState {
 type UserAction =
   | { type: 'SET_USER_DATA'; payload: AuthResponse }
   | { type: 'CLEAR_USER_DATA' }
-  | { type: 'SET_USER_STATS'; payload: UserStats }
+  | { type: 'SET_USER_STATS'; payload: UserStats | null }
   | { type: 'SET_LOADING'; payload: boolean }
   | { type: 'SET_ERROR'; payload: { hasError: boolean; message?: string } };
 
@@ -84,37 +84,10 @@ export const UserContext = createContext<UserContextType | undefined>(undefined)
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [state, dispatch] = useReducer(userReducer, initialState);
+  const hasLoadedFromStorage = useRef(false); // Flag para evitar múltiples llamadas
 
   // React Query hooks
-  const { data: userStats, refetch: refetchUserStats } = useUserStats(state.token);
   const createSaleMutation = useCreateSale();
-
-  // Cargar datos del localStorage al iniciar
-  useEffect(() => {
-    const storedToken = localStorage.getItem("token");
-    const storedEmail = localStorage.getItem("email");
-    const storedName = localStorage.getItem("name");
-    const storedUserId = localStorage.getItem("userId");
-
-    if (storedToken && storedEmail && storedName) {
-      dispatch({
-        type: 'SET_USER_DATA',
-        payload: {
-          token: storedToken,
-          email: storedEmail,
-          name: storedName,
-          userId: storedUserId || '',
-        },
-      });
-    }
-  }, []);
-
-  // Actualizar userStats cuando cambie
-  useEffect(() => {
-    if (userStats) {
-      dispatch({ type: 'SET_USER_STATS', payload: userStats });
-    }
-  }, [userStats]);
 
   // Guardar datos en localStorage
   const saveToLocalStorage = useCallback((data: AuthResponse) => {
@@ -132,17 +105,49 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     localStorage.removeItem("userId");
   }, []);
 
+  // Cargar datos del localStorage al iniciar (solo una vez)
+  useEffect(() => {
+    if (hasLoadedFromStorage.current) return;
+    hasLoadedFromStorage.current = true;
+    const storedToken = localStorage.getItem("token");
+    const storedEmail = localStorage.getItem("email");
+    const storedName = localStorage.getItem("name");
+    const storedUserId = localStorage.getItem("userId");
+
+    if (storedToken && storedEmail && storedName) {
+      dispatch({
+        type: 'SET_USER_DATA',
+        payload: {
+          token: storedToken,
+          email: storedEmail,
+          name: storedName,
+          userId: storedUserId || '',
+        },
+      });
+      // Cargar stats solo si hay token válido
+      ApiService.getUserStats(storedToken)
+        .then(stats => {
+          dispatch({ type: 'SET_USER_STATS', payload: stats });
+        })
+        .catch(() => {
+          dispatch({ type: 'SET_USER_STATS', payload: null });
+        });
+    }
+  }, []);
+
   // Login
   const login = useCallback(async (email: string, password: string): Promise<void> => {
     dispatch({ type: 'SET_LOADING', payload: true });
     try {
       const result = await ApiService.login(email, password);
+      if (!result.token) throw new Error('No token');
       saveToLocalStorage(result);
       dispatch({ type: 'SET_USER_DATA', payload: result });
-      // Esperamos a que los stats se carguen antes de continuar
       const stats = await ApiService.getUserStats(result.token);
       dispatch({ type: 'SET_USER_STATS', payload: stats });
     } catch (error) {
+      clearLocalStorage();
+      dispatch({ type: 'CLEAR_USER_DATA' });
       dispatch({
         type: 'SET_ERROR',
         payload: { hasError: true, message: 'Error al iniciar sesión' },
@@ -150,19 +155,21 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       dispatch({ type: 'SET_LOADING', payload: false });
     }
-  }, [saveToLocalStorage]);
+  }, [saveToLocalStorage, clearLocalStorage]);
 
   // Register
   const register = useCallback(async (email: string, name: string, password: string): Promise<void> => {
     dispatch({ type: 'SET_LOADING', payload: true });
     try {
       const result = await ApiService.register(email, name, password);
+      if (!result.token) throw new Error('No token');
       saveToLocalStorage(result);
       dispatch({ type: 'SET_USER_DATA', payload: result });
-      // Esperamos a que los stats se carguen antes de continuar
       const stats = await ApiService.getUserStats(result.token);
       dispatch({ type: 'SET_USER_STATS', payload: stats });
     } catch (error) {
+      clearLocalStorage();
+      dispatch({ type: 'CLEAR_USER_DATA' });
       dispatch({
         type: 'SET_ERROR',
         payload: { hasError: true, message: 'Error al registrar usuario' },
@@ -170,7 +177,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       dispatch({ type: 'SET_LOADING', payload: false });
     }
-  }, [saveToLocalStorage]);
+  }, [saveToLocalStorage, clearLocalStorage]);
 
   // Logout
   const logout = useCallback(() => {
@@ -182,7 +189,6 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   // Get User Data
   const getUserData = useCallback(async (): Promise<void> => {
     if (!state.token) return;
-
     try {
       const data = await ApiService.getUserData(state.token);
       dispatch({
@@ -268,7 +274,10 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     logout,
     getUserData,
     getUserStats: async () => {
-      await refetchUserStats();
+      if (state.token) {
+        const stats = await ApiService.getUserStats(state.token);
+        dispatch({ type: 'SET_USER_STATS', payload: stats });
+      }
     },
     createSale,
     getActiveSales,
@@ -280,7 +289,6 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     register,
     logout,
     getUserData,
-    refetchUserStats,
     createSale,
     getActiveSales,
     getAllSales,

@@ -1,15 +1,10 @@
-import { useEffect } from 'react'
+import { useUser } from '../context/UserProvider'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
-import { useUser } from '../context/UserProvider'
 import { toLocalString } from '../utils/toLocalString'
 
 export const Profile: React.FC = () => {
-  const { userStats, name, getUserStats } = useUser()
-
-  useEffect(() => {
-    getUserStats()
-  }, [getUserStats])
+  const { userStats, name } = useUser()
 
   return (
     <div className='min-h-[100vh] flex-1 p-6'>
