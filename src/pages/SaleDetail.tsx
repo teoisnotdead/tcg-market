@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
@@ -13,30 +13,64 @@ import { toLocalString } from "../utils/toLocalString";
 import { EditSaleDialog } from "@/components/EditSaleDialog";
 import { DeleteConfirmationDialog } from "@/components/DeleteConfirmationDialog";
 import { Toaster } from "@/components/ui/sonner";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
+const API_URL = import.meta.env.VITE_API_URL;
 
 export const SaleDetail = () => {
   const { id } = useParams<{ id: string }>();
-  const [sale, setSale] = useState<SaleData | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState<string>("");
-  const [localUserId, setLocalUserId] = useState<string | null>(null);
   const { addToCart, removeFromCart, cart } = useCart();
   const { userId, token } = useUser();
   const [openDeleteModal, setOpenDeleteModal] = useState<boolean>(false);
   const [openEditModal, setOpenEditModal] = useState<boolean>(false);
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
-  console.log('userId', userId);
-  console.log('userIdFromLocalStorage', localStorage.getItem('userId'));
+  // Query para obtener los datos de la venta
+  const { data: sale, isLoading } = useQuery({
+    queryKey: ['sale', id],
+    queryFn: async () => {
+      const response = await fetch(`${API_URL}/sales/${id}`);
+      if (!response.ok) throw new Error("Venta no encontrada");
+      return response.json();
+    }
+  });
 
-  const isOwner = (userId || localUserId) === sale?.seller_id;
+  // Query para obtener los comentarios
+  const { data: comments = [], refetch: refetchComments } = useQuery({
+    queryKey: ['comments', id],
+    queryFn: async () => {
+      const response = await fetch(`${API_URL}/comments/${id}`);
+      if (!response.ok) throw new Error("Error al obtener comentarios");
+      return response.json();
+    }
+  });
 
-  // Handle Edit Sale
-  const handleEditSale = async (updatedData: SaleData) => {
-    try {
-      const response = await fetch(`https://tcg-market-api.onrender.com/sales/${sale?.id}`, {
+  // Mutation para agregar comentario
+  const addCommentMutation = useMutation({
+    mutationFn: async (content: string) => {
+      const response = await fetch(`${API_URL}/comments`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ sale_id: id, content }),
+      });
+      if (!response.ok) throw new Error("Error al agregar comentario");
+      return response.json();
+    },
+    onSuccess: () => {
+      refetchComments();
+      setNewComment("");
+    }
+  });
+
+  // Mutation para editar venta
+  const editSaleMutation = useMutation({
+    mutationFn: async (updatedData: SaleData) => {
+      const response = await fetch(`${API_URL}/sales/${sale?.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -44,113 +78,49 @@ export const SaleDetail = () => {
         },
         body: JSON.stringify(updatedData),
       });
-
       if (!response.ok) throw new Error("Error al actualizar la venta");
-
+      return response.json();
+    },
+    onSuccess: (data) => {
+      queryClient.setQueryData(['sale', id], data);
       setOpenEditModal(false);
-      setSale(updatedData);
-    } catch (error) {
-      console.error("Error al modificar la venta:", error);
     }
-  };
+  });
 
-  // Handle Delete Sale
-  const handleDeleteSale = async () => {
-    setLoading(true);
-
-    try {
-      const response = await fetch(`https://tcg-market-api.onrender.com/sales/${sale?.id}`, {
+  // Mutation para eliminar venta
+  const deleteSaleMutation = useMutation({
+    mutationFn: async () => {
+      const response = await fetch(`${API_URL}/sales/${sale?.id}`, {
         method: 'DELETE',
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       });
-
-      if (!response.ok) {
-        throw new Error("Error al eliminar la venta");
-      }
-
+      if (!response.ok) throw new Error("Error al eliminar la venta");
+    },
+    onSuccess: () => {
       toast.success("Venta eliminada exitosamente", { description: "La venta fue eliminada correctamente." });
       navigate('/cuenta/mis-ventas');
-    } catch (error: any) {
-      console.error(error);
-
-      const errorMessage = error instanceof Error ? error.message : "Hubo un error al intentar eliminar la venta";
-      toast.error("Error al eliminar la venta", { description: errorMessage });
-    } finally {
-      setLoading(false);
     }
+  });
+
+  const isOwner = userId === sale?.seller_id;
+
+  const handleEditSale = (updatedData: SaleData) => {
+    editSaleMutation.mutate(updatedData);
   };
 
-  useEffect(() => {
-    // Si userId no está disponible en el contexto, intentamos obtenerlo de localStorage.
-    if (!userId) {
-      const storedUserId = localStorage.getItem("userId");
-      if (storedUserId) {
-        setLocalUserId(storedUserId); // Actualizamos el estado local con el valor de localStorage
-      }
-    }
-  }, [userId]);
+  const handleDeleteSale = () => {
+    deleteSaleMutation.mutate();
+  };
 
-  // Obtener datos de la venta
-  useEffect(() => {
-    const fetchSale = async () => {
-      try {
-        const response = await fetch(`https://tcg-market-api.onrender.com/sales/${id}`);
-        if (!response.ok) throw new Error("Venta no encontrada");
-        const data = await response.json();
-        setSale(data);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchSale();
-  }, [id]);
-
-  // Obtener comentarios de la venta
-  useEffect(() => {
-    const fetchComments = async () => {
-      try {
-        const response = await fetch(`https://tcg-market-api.onrender.com/comments/${id}`);
-        if (!response.ok) throw new Error("Error al obtener comentarios");
-        const data = await response.json();
-        setComments(data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    fetchComments();
-  }, [id]);
-
-  const handleAddComment = async () => {
+  const handleAddComment = () => {
     if (!newComment.trim()) return;
-
-    try {
-      const response = await fetch(`https://tcg-market-api.onrender.com/comments`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ sale_id: id, content: newComment }),
-      });
-
-      if (!response.ok) throw new Error("Error al agregar comentario");
-
-      const data = await response.json();
-      setComments((prev) => [data, ...prev]);
-      setNewComment("");
-    } catch (error) {
-      console.error(error);
-    }
+    addCommentMutation.mutate(newComment);
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="mx-auto max-w-7xl">
         <NavHome />

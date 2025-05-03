@@ -10,10 +10,11 @@ export const Marketplace = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
+  const API_URL = import.meta.env.VITE_API_URL;
 
   const fetchProducts = async (page: number) => {
     const offset = (page - 1) * itemsPerPage;
-    const response = await getFetch(`https://tcg-market-api.onrender.com/sales?limit=${itemsPerPage}&offset=${offset}`);
+    const response = await getFetch(`${API_URL}/sales?limit=${itemsPerPage}&offset=${offset}`);
     console.log('response', response)
 
     if (!response.hasError) {

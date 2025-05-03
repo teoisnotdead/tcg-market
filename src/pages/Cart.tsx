@@ -12,6 +12,8 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { CartItem } from '../types/interfaces'
 import { Link } from 'react-router-dom'
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 export const Cart = () => {
   const { cart, total, clearCart, removeFromCart } = useCart()
   const { token, } = useUser()
@@ -28,7 +30,7 @@ export const Cart = () => {
 
     try {
       for (const item of cart) {
-        const response = await getFetch('https://tcg-market-api.onrender.com/sales/checkout', {
+        const response = await getFetch(`${API_URL}/sales/checkout`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

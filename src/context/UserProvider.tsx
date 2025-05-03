@@ -1,252 +1,290 @@
-import { createContext, useState, useContext, useEffect, ReactNode } from "react";
-import { useFetch } from "../hooks/useFetch";
-import { useNavigate } from "react-router-dom";
+import { createContext, useReducer, useContext, useEffect, ReactNode, useCallback, useMemo } from "react";
 import { UserContextType, AuthResponse, SaleData, SaleResponse, UserStats } from "../types/interfaces";
+import { ApiService } from "../services/api";
+import { useUserStats, useActiveSales, useAllSales, useAllPurchases, useCreateSale } from "../hooks/useQueries";
+
+// Definición del estado
+interface UserState {
+  token: string | null;
+  email: string | null;
+  name: string | null;
+  userId: string | null;
+  userStats: UserStats | null;
+  isLoading: boolean;
+  hasError: boolean;
+  errorMessage: string | null;
+}
+
+// Acciones
+type UserAction =
+  | { type: 'SET_USER_DATA'; payload: AuthResponse }
+  | { type: 'CLEAR_USER_DATA' }
+  | { type: 'SET_USER_STATS'; payload: UserStats }
+  | { type: 'SET_LOADING'; payload: boolean }
+  | { type: 'SET_ERROR'; payload: { hasError: boolean; message?: string } };
+
+// Reducer
+const userReducer = (state: UserState, action: UserAction): UserState => {
+  switch (action.type) {
+    case 'SET_USER_DATA':
+      return {
+        ...state,
+        token: action.payload.token,
+        email: action.payload.email,
+        name: action.payload.name,
+        userId: action.payload.userId,
+        hasError: false,
+        errorMessage: null,
+      };
+    case 'CLEAR_USER_DATA':
+      return {
+        ...state,
+        token: null,
+        email: null,
+        name: null,
+        userId: null,
+        userStats: null,
+        hasError: false,
+        errorMessage: null,
+      };
+    case 'SET_USER_STATS':
+      return {
+        ...state,
+        userStats: action.payload,
+      };
+    case 'SET_LOADING':
+      return {
+        ...state,
+        isLoading: action.payload,
+      };
+    case 'SET_ERROR':
+      return {
+        ...state,
+        hasError: action.payload.hasError,
+        errorMessage: action.payload.message || null,
+      };
+    default:
+      return state;
+  }
+};
+
+// Estado inicial
+const initialState: UserState = {
+  token: null,
+  email: null,
+  name: null,
+  userId: null,
+  userStats: null,
+  isLoading: false,
+  hasError: false,
+  errorMessage: null,
+};
 
 export const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
-  const [token, setToken] = useState<string | null>(null);
-  const [email, setEmail] = useState<string | null>(null);
-  const [name, setName] = useState<string | null>(null);
-  const [userStats, setUserStats] = useState<UserStats | null>(null);
-  const [userId, setUserId] = useState<string | null>(null);
+  const [state, dispatch] = useReducer(userReducer, initialState);
 
-  const { isLoading, hasError, getFetch } = useFetch();
-  const navigate = useNavigate();
+  // React Query hooks
+  const { data: userStats, refetch: refetchUserStats } = useUserStats(state.token);
+  const createSaleMutation = useCreateSale();
 
-  const baseUrl = "https://tcg-market-api.onrender.com";
-
-  /**
-   * ✅ Cargar datos de localStorage cuando se inicia la app
-   */
+  // Cargar datos del localStorage al iniciar
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
     const storedEmail = localStorage.getItem("email");
     const storedName = localStorage.getItem("name");
+    const storedUserId = localStorage.getItem("userId");
 
-    if (storedToken) {
-      setToken(storedToken);
-      setEmail(storedEmail);
-      setName(storedName);
+    if (storedToken && storedEmail && storedName) {
+      dispatch({
+        type: 'SET_USER_DATA',
+        payload: {
+          token: storedToken,
+          email: storedEmail,
+          name: storedName,
+          userId: storedUserId || '',
+        },
+      });
     }
   }, []);
 
-  /**
-   * ✅ Obtener estadísticas del usuario (ventas activas, vendidas, compras)
-   */
-  const getUserStats = async (): Promise<void> => {
-    if (!token) return;
-
-    const url = `${baseUrl}/users/stats`;
-    const headers = { headers: { Authorization: `Bearer ${token}` } };
-
-    const { data, hasError } = await getFetch(url, headers);
-
-    if (!hasError && data) {
-      setUserStats(data);
+  // Actualizar userStats cuando cambie
+  useEffect(() => {
+    if (userStats) {
+      dispatch({ type: 'SET_USER_STATS', payload: userStats });
     }
-  };
+  }, [userStats]);
 
-  /**
-   * ✅ Función auxiliar para peticiones de autenticación (login/register)
-   */
-  const authRequest = async (url: string, body: object): Promise<AuthResponse | null> => {
-    const headers = {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    };
+  // Guardar datos en localStorage
+  const saveToLocalStorage = useCallback((data: AuthResponse) => {
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("email", data.email);
+    localStorage.setItem("name", data.name);
+    localStorage.setItem("userId", data.userId);
+  }, []);
 
-    const result = await getFetch(url, headers);
-    return !result.hasError && result.data ? result.data : null;
-  };
-
-  /**
-   * ✅ Guardar datos de usuario en `localStorage` y estado
-   */
-  const setDataFromResponse = ({ email, name, token, userId }: AuthResponse) => {
-    localStorage.setItem("token", token);
-    localStorage.setItem("email", email);
-    localStorage.setItem("name", name);
-    localStorage.setItem("userId", userId);
-    setToken(token);
-    setEmail(email);
-    setName(name);
-  };
-
-  /**
-   * ✅ Eliminar datos del almacenamiento local al cerrar sesión
-   */
-  const deleteDataFromLocalStorage = () => {
+  // Eliminar datos del localStorage
+  const clearLocalStorage = useCallback(() => {
     localStorage.removeItem("token");
     localStorage.removeItem("email");
     localStorage.removeItem("name");
     localStorage.removeItem("userId");
-  };
+  }, []);
 
-  /**
-   * ✅ Iniciar sesión
-   */
-  const login = async (email: string, password: string): Promise<void> => {
-    const url = `${baseUrl}/auth/login`;
-    const result = await authRequest(url, { email, password });
-
-    if (result) {
-      setDataFromResponse(result);
-      getUserStats();
+  // Login
+  const login = useCallback(async (email: string, password: string): Promise<void> => {
+    dispatch({ type: 'SET_LOADING', payload: true });
+    try {
+      const result = await ApiService.login(email, password);
+      saveToLocalStorage(result);
+      dispatch({ type: 'SET_USER_DATA', payload: result });
+      await refetchUserStats();
+    } catch (error) {
+      dispatch({
+        type: 'SET_ERROR',
+        payload: { hasError: true, message: 'Error al iniciar sesión' },
+      });
+    } finally {
+      dispatch({ type: 'SET_LOADING', payload: false });
     }
-  };
+  }, [saveToLocalStorage, refetchUserStats]);
 
-  /**
-   * ✅ Registrar usuario
-   */
-  const register = async (email: string, name: string, password: string): Promise<void> => {
-    const url = `${baseUrl}/auth/register`;
-    const result = await authRequest(url, { email, name, password });
-
-    if (result) {
-      setDataFromResponse(result);
-      getUserStats();
+  // Register
+  const register = useCallback(async (email: string, name: string, password: string): Promise<void> => {
+    dispatch({ type: 'SET_LOADING', payload: true });
+    try {
+      const result = await ApiService.register(email, name, password);
+      saveToLocalStorage(result);
+      dispatch({ type: 'SET_USER_DATA', payload: result });
+      await refetchUserStats();
+    } catch (error) {
+      dispatch({
+        type: 'SET_ERROR',
+        payload: { hasError: true, message: 'Error al registrar usuario' },
+      });
+    } finally {
+      dispatch({ type: 'SET_LOADING', payload: false });
     }
-  };
+  }, [saveToLocalStorage, refetchUserStats]);
 
-  /**
-   * ✅ Cerrar sesión
-   */
-  const logout = () => {
-    deleteDataFromLocalStorage();
-    setToken(null);
-    setEmail(null);
-    setName(null);
-    setUserStats(null);
-    navigate("/login");
-  };
+  // Logout
+  const logout = useCallback(() => {
+    clearLocalStorage();
+    dispatch({ type: 'CLEAR_USER_DATA' });
+    window.location.href = "/login";
+  }, [clearLocalStorage]);
 
-  /**
-   * ✅ Obtener datos del usuario logueado desde la API
-   */
-  const getUserData = async (): Promise<void> => {
-    if (!token) return;
+  // Get User Data
+  const getUserData = useCallback(async (): Promise<void> => {
+    if (!state.token) return;
 
-    const url = `${baseUrl}/users/me`;
-    const headers = {
-      headers: { Authorization: `Bearer ${token}` },
-    };
-
-    const { data } = await getFetch(url, headers);
-
-    if (data) {
-      setUserId(data.id);
-      setEmail(data.email);
-      setName(data.name);
+    try {
+      const data = await ApiService.getUserData(state.token);
+      dispatch({
+        type: 'SET_USER_DATA',
+        payload: {
+          token: state.token,
+          email: data.email,
+          name: data.name,
+          userId: data.id,
+        },
+      });
       localStorage.setItem("email", data.email);
       localStorage.setItem("name", data.name);
+    } catch (error) {
+      dispatch({
+        type: 'SET_ERROR',
+        payload: { hasError: true, message: 'Error al obtener datos del usuario' },
+      });
     }
-  };
+  }, [state.token]);
 
-  /**
-   * ✅ Crear una nueva venta y actualizar estadísticas
-   */
-  const createSale = async (saleData: SaleData): Promise<SaleResponse> => {
-    if (!token) return { hasError: true, message: "Usuario no autenticado" };
+  // Create Sale
+  const createSale = useCallback(async (saleData: SaleData): Promise<SaleResponse> => {
+    if (!state.token) {
+      return { hasError: true, message: "Usuario no autenticado" };
+    }
 
-    const url = `${baseUrl}/sales`;
-    const headers = {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(saleData),
-    };
-
-    const result = await getFetch(url, headers);
-
-    if (result.hasError) {
+    try {
+      const result = await createSaleMutation.mutateAsync({ token: state.token, saleData });
+      return result;
+    } catch (error) {
       return { hasError: true, message: "Error al crear la venta" };
     }
+  }, [state.token, createSaleMutation]);
 
-    // ✅ Actualizar estadísticas después de crear una venta
-    getUserStats();
+  // Get Active Sales
+  const getActiveSales = useCallback(async (limit: number, offset: number): Promise<SaleResponse> => {
+    if (!state.token) {
+      return { hasError: true, message: "Usuario no autenticado" };
+    }
 
-    return { hasError: false, data: result.data };
-  };
-
-  /**
- * ✅ Obtener ventas activas del usuario
- */
-  const getActiveSales = async (limit: number, offset: number): Promise<SaleResponse> => {
-    if (!token) return { hasError: true, message: "Usuario no autenticado" };
-
-    const url = `${baseUrl}/sales/active-sales?limit=${limit}&offset=${offset}`;
-    const headers = { headers: { Authorization: `Bearer ${token}` } };
-
-    const result = await getFetch(url, headers);
-
-    if (result.hasError) {
+    try {
+      const result = await useActiveSales(state.token, limit, offset);
+      return result.data || { hasError: true, message: "No se encontraron ventas activas" };
+    } catch (error) {
       return { hasError: true, message: "Error al obtener ventas activas" };
     }
+  }, [state.token]);
 
-    return { hasError: false, data: result.data, totalPages: result.totalPages };
-  };
-
-
-  const getAllPurchases = async (): Promise<SaleResponse> => {
-    if (!token) return { hasError: true, message: "Usuario no autenticado" };
-
-    const url = `${baseUrl}/purchases`;
-    const headers = { headers: { Authorization: `Bearer ${token}` } };
-
-    const result = await getFetch(url, headers);
-
-    if (result.hasError) {
-      return { hasError: true, message: "Error al obtener compras realizadas" };
+  // Get All Sales
+  const getAllSales = useCallback(async (): Promise<SaleResponse> => {
+    if (!state.token) {
+      return { hasError: true, message: "Usuario no autenticado" };
     }
 
-    return { hasError: false, data: result.data };
-  };
-
-  /**
-   * ✅ Obtener todas las ventas del usuario
-   */
-  const getAllSales = async (): Promise<SaleResponse> => {
-    if (!token) return { hasError: true, message: "Usuario no autenticado" };
-
-    const url = `${baseUrl}/sales/all-sales`;
-    const headers = { headers: { Authorization: `Bearer ${token}` } };
-
-    const result = await getFetch(url, headers);
-
-    if (result.hasError) {
+    try {
+      const result = await useAllSales(state.token);
+      return result.data || { hasError: true, message: "No se encontraron ventas" };
+    } catch (error) {
       return { hasError: true, message: "Error al obtener todas las ventas" };
     }
+  }, [state.token]);
 
-    return { hasError: false, data: result.data };
-  };
+  // Get All Purchases
+  const getAllPurchases = useCallback(async (): Promise<SaleResponse> => {
+    if (!state.token) {
+      return { hasError: true, message: "Usuario no autenticado" };
+    }
 
+    try {
+      const result = await useAllPurchases(state.token);
+      return result.data || { hasError: true, message: "No se encontraron compras" };
+    } catch (error) {
+      return { hasError: true, message: "Error al obtener compras" };
+    }
+  }, [state.token]);
+
+  // Memoize context value
+  const contextValue = useMemo(() => ({
+    ...state,
+    login,
+    register,
+    logout,
+    getUserData,
+    getUserStats: async () => {
+      await refetchUserStats();
+    },
+    createSale,
+    getActiveSales,
+    getAllSales,
+    getAllPurchases,
+  }), [
+    state,
+    login,
+    register,
+    logout,
+    getUserData,
+    refetchUserStats,
+    createSale,
+    getActiveSales,
+    getAllSales,
+    getAllPurchases,
+  ]);
 
   return (
-    <UserContext.Provider
-      value={{
-        token,
-        userId,
-        email,
-        name,
-        login,
-        register,
-        logout,
-        getUserData,
-        createSale,
-        getUserStats,
-        getActiveSales,
-        getAllSales,
-        getAllPurchases,
-        userStats,
-        isLoading,
-        hasError,
-      }}
-    >
+    <UserContext.Provider value={contextValue}>
       {children}
     </UserContext.Provider>
   );

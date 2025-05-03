@@ -8,7 +8,8 @@ import { CardTcgProps } from "../types/interfaces";
 export const Home: React.FC = () => {
   const { isLoading, getFetch } = useFetch();
   const [products, setProducts] = useState<CardTcgProps[]>([]);
-  const baseUrl = "https://tcg-market-api.onrender.com/sales?limit=3";
+  const API_URL = import.meta.env.VITE_API_URL;
+  const baseUrl = `${API_URL}/sales?limit=3`;
 
   const getCards = async () => {
     const { data } = await getFetch(baseUrl);
