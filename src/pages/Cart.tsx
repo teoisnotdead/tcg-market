@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { useCart } from '../context/CartProvider'
 import { useUser } from '../context/UserProvider'
-import { useFetch } from '../hooks/useFetch'
 import { toLocalString } from '../utils/toLocalString'
 import { NavHome } from '../components/NavHome'
 import { Button } from '@/components/ui/button'
@@ -11,14 +10,13 @@ import { Toaster } from '@/components/ui/sonner'
 import { Skeleton } from '@/components/ui/skeleton'
 import { CartItem } from '../types/interfaces'
 import { Link } from 'react-router-dom'
-
-const API_URL = import.meta.env.VITE_API_URL;
+import { useCheckout } from '../hooks/useQueries'
 
 export const Cart = () => {
   const { cart, total, clearCart, removeFromCart } = useCart()
-  const { token, } = useUser()
-  const { isLoading, getFetch } = useFetch()
+  const { token } = useUser()
   const [isProcessing, setIsProcessing] = useState(false)
+  const checkoutMutation = useCheckout(token)
 
   const handlePay = async () => {
     if (!token) {
@@ -30,31 +28,18 @@ export const Cart = () => {
 
     try {
       for (const item of cart) {
-        const response = await getFetch(`${API_URL}/sales/checkout`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            sale_id: item.id, // Usamos `sale_id` como espera la API
-            quantity: item.count, // La cantidad seleccionada
-          }),
-        });
-
+        const response = await checkoutMutation.mutateAsync({ sale_id: item.id, quantity: item.count });
         if (response.hasError) {
           toast.error(`Error al comprar ${item.name}`, {
             description: response.message || 'Inténtalo nuevamente.',
           });
-          continue; // Saltamos este producto y seguimos con los demás
+          continue;
         }
-
         toast.success(`Compra exitosa: ${item.name}`, {
           description: `Se compraron ${item.count} unidades.`,
         });
       }
-
-      clearCart(); // Limpiamos el carrito después de la compra
+      clearCart();
     } catch (error) {
       toast.error('Error al procesar el pago.');
     } finally {
@@ -131,7 +116,7 @@ export const Cart = () => {
         </div>
 
         {/* ✅ Carga mientras se procesa */}
-        {isLoading && (
+        {isProcessing && (
           <div className='flex flex-col items-center mt-5'>
             <Skeleton className='w-48 h-10 rounded-lg' />
             <p className='text-xl text-white mt-3'>Procesando el pago...</p>

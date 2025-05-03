@@ -143,4 +143,16 @@ export class ApiService {
     const response = await fetch(`${BASE_URL}/sales?limit=${limit}&offset=${offset}`);
     return response.json();
   }
+
+  static async checkout(token: string, sale_id: string, quantity: number) {
+    const response = await fetch(`${BASE_URL}/sales/checkout`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ sale_id, quantity }),
+    });
+    return response.json();
+  }
 } 

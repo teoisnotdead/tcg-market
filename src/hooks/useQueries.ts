@@ -106,4 +106,12 @@ export const useMarketplaceProducts = (limit: number, offset: number) => {
     queryKey: ['marketplaceProducts', limit, offset],
     queryFn: () => ApiService.getMarketplaceProducts(limit, offset),
   });
+};
+
+export const useCheckout = (token: string | null) => {
+  return useMutation({
+    mutationFn: async ({ sale_id, quantity }: { sale_id: string; quantity: number }) => {
+      return await ApiService.checkout(token!, sale_id, quantity);
+    },
+  });
 }; 
