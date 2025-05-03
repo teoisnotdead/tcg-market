@@ -18,18 +18,18 @@ export const useActiveSales = (token: string | null, limit: number, offset: numb
   });
 };
 
-export const useAllSales = (token: string | null) => {
+export const useAllSales = (token: string | null, limit: number, offset: number) => {
   return useQuery({
-    queryKey: ['allSales'],
-    queryFn: () => ApiService.getAllSales(token!),
+    queryKey: ['allSales', token, limit, offset],
+    queryFn: () => ApiService.getAllSales(token!, limit, offset),
     enabled: !!token,
   });
 };
 
-export const useAllPurchases = (token: string | null) => {
+export const useAllPurchases = (token: string | null, limit: number, offset: number) => {
   return useQuery({
-    queryKey: ['allPurchases', token],
-    queryFn: () => ApiService.getAllPurchases(token!),
+    queryKey: ['allPurchases', token, limit, offset],
+    queryFn: () => ApiService.getAllPurchases(token!, limit, offset),
     enabled: !!token,
   });
 };

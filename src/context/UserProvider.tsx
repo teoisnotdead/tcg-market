@@ -245,7 +245,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     }
 
     try {
-      const result = await useAllSales(state.token);
+      const result = await useAllSales(state.token, 10, 0);
       return result.data || { hasError: true, message: "No se encontraron ventas" };
     } catch (error) {
       return { hasError: true, message: "Error al obtener todas las ventas" };
@@ -259,7 +259,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     }
 
     try {
-      const result = await useAllPurchases(state.token);
+      const result = await useAllPurchases(state.token, 10, 0);
       return result.data || { hasError: true, message: "No se encontraron compras" };
     } catch (error) {
       return { hasError: true, message: "Error al obtener compras" };

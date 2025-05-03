@@ -67,15 +67,23 @@ export class ApiService {
     return response.json();
   }
 
-  static async getAllSales(token: string): Promise<SaleResponse> {
-    const response = await fetch(`${BASE_URL}/sales/all-sales`, {
+  static async getAllSales(token: string, limit?: number, offset?: number): Promise<SaleResponse> {
+    let url = `${BASE_URL}/sales/all-sales`;
+    if (limit !== undefined && offset !== undefined) {
+      url += `?limit=${limit}&offset=${offset}`;
+    }
+    const response = await fetch(url, {
       ...this.getHeaders(token),
     });
     return response.json();
   }
 
-  static async getAllPurchases(token: string): Promise<SaleResponse> {
-    const response = await fetch(`${BASE_URL}/purchases`, {
+  static async getAllPurchases(token: string, limit?: number, offset?: number): Promise<SaleResponse> {
+    let url = `${BASE_URL}/purchases`;
+    if (limit !== undefined && offset !== undefined) {
+      url += `?limit=${limit}&offset=${offset}`;
+    }
+    const response = await fetch(url, {
       ...this.getHeaders(token),
     });
     return response.json();

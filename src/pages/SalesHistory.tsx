@@ -6,30 +6,36 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useNavigate } from "react-router-dom";
 import { toLocalString } from "../utils/toLocalString";
+import { useAllSales } from "../hooks/useQueries";
 
 export const SalesHistory = () => {
-  const { getAllSales } = useUser();
+  const { token } = useUser();
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6;
+  const { data, isLoading, isError } = useAllSales(token, itemsPerPage, (currentPage - 1) * itemsPerPage);
   const [sales, setSales] = useState<SaleData[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [totalPages, setTotalPages] = useState<number>(1);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchSales = async () => {
-      setLoading(true);
-      const result = await getAllSales();
-      if (!result.hasError) {
-        setSales(result.data);
-      }
-      setLoading(false);
-    };
-
-    fetchSales();
-  }, []);
+    setLoading(isLoading);
+    if (isLoading) return;
+    // Soporta tanto array plano como objeto con data
+    let ventas: SaleData[] = [];
+    if (Array.isArray(data)) {
+      ventas = data;
+    } else if (data && Array.isArray(data.data)) {
+      ventas = data.data;
+      setTotalPages(data.totalPages || 1);
+    }
+    setSales(ventas);
+    setLoading(false);
+  }, [data, isLoading, isError]);
 
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-6">Historial de Ventas</h1>
-
       <div className="border rounded-lg shadow-sm">
         {loading ? (
           <Skeleton className="h-40 w-full" />
@@ -74,6 +80,22 @@ export const SalesHistory = () => {
           </Table>
         )}
       </div>
+      {/* Paginación fuera del borde */}
+      {sales.length > 0 && (
+        <div className="flex justify-center mt-4">
+          {Array.from({ length: totalPages }).map((_, idx) => (
+            <Button
+              key={idx}
+              variant={currentPage === idx + 1 ? "default" : "outline"}
+              size="sm"
+              className="mx-1"
+              onClick={() => setCurrentPage(idx + 1)}
+            >
+              {idx + 1}
+            </Button>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
