@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useCart } from "../context/CartProvider";
 import { useUser } from "../context/UserProvider";
 import { NavHome } from "../components/NavHome";
-import { SaleData, Comment } from "../types/interfaces";
+import { SaleData } from "../types/interfaces";
 import { toTimeAgo } from "../utils/toTimeAgo";
 import { toast } from "sonner";
 import { toLocalString } from "../utils/toLocalString";

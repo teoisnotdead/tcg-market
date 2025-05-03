@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { ApiService } from '../services/api';
-import { SaleData, SaleResponse, UserStats } from '../types/interfaces';
+import { SaleData } from '../types/interfaces';
 
 export const useUserStats = (token: string | null) => {
   return useQuery({
