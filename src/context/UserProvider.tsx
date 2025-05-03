@@ -84,10 +84,33 @@ export const UserContext = createContext<UserContextType | undefined>(undefined)
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [state, dispatch] = useReducer(userReducer, initialState);
-  const hasLoadedFromStorage = useRef(false); // Flag para evitar múltiples llamadas
+  const hasLoadedFromStorage = useRef(false);
 
   // React Query hooks
   const createSaleMutation = useCreateSale();
+
+  // Verificar la validez del token periódicamente
+  useEffect(() => {
+    if (!state.token) return;
+
+    const checkTokenValidity = async () => {
+      try {
+        // Aseguramos que el token no sea null
+        if (!state.token) return;
+        await ApiService.getUserData(state.token);
+      } catch (error) {
+        // Si hay un error de autenticación, limpiar el estado
+        clearLocalStorage();
+        dispatch({ type: 'CLEAR_USER_DATA' });
+        window.location.href = "/login";
+      }
+    };
+
+    // Verificar cada 5 minutos
+    const interval = setInterval(checkTokenValidity, 5 * 60 * 1000);
+
+    return () => clearInterval(interval);
+  }, [state.token]);
 
   // Guardar datos en localStorage
   const saveToLocalStorage = useCallback((data: AuthResponse) => {

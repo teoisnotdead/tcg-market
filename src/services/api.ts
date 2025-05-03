@@ -6,6 +6,21 @@ if (!BASE_URL) {
   throw new Error('La variable de entorno VITE_API_URL no está definida');
 }
 
+// Función para manejar errores de autenticación
+const handleAuthError = (response: Response) => {
+  if (response.status === 401) {
+    // Limpiar el localStorage
+    localStorage.removeItem("token");
+    localStorage.removeItem("email");
+    localStorage.removeItem("name");
+    localStorage.removeItem("userId");
+    // Redirigir al login
+    window.location.href = "/login";
+    throw new Error('Sesión expirada');
+  }
+  return response;
+};
+
 export class ApiService {
   private static getHeaders(token: string | null) {
     return {
@@ -38,6 +53,7 @@ export class ApiService {
     const response = await fetch(`${BASE_URL}/users/me`, {
       ...this.getHeaders(token),
     });
+    handleAuthError(response);
     return response.json();
   }
 
@@ -45,6 +61,7 @@ export class ApiService {
     const response = await fetch(`${BASE_URL}/users/stats`, {
       ...this.getHeaders(token),
     });
+    handleAuthError(response);
     return response.json();
   }
 
@@ -54,6 +71,7 @@ export class ApiService {
       ...this.getHeaders(token),
       body: JSON.stringify(saleData),
     });
+    handleAuthError(response);
     return response.json();
   }
 
@@ -64,6 +82,7 @@ export class ApiService {
         ...this.getHeaders(token),
       }
     );
+    handleAuthError(response);
     return response.json();
   }
 
@@ -75,6 +94,7 @@ export class ApiService {
     const response = await fetch(url, {
       ...this.getHeaders(token),
     });
+    handleAuthError(response);
     return response.json();
   }
 
@@ -86,6 +106,7 @@ export class ApiService {
     const response = await fetch(url, {
       ...this.getHeaders(token),
     });
+    handleAuthError(response);
     return response.json();
   }
 
@@ -108,6 +129,7 @@ export class ApiService {
       },
       body: JSON.stringify({ sale_id: saleId, content }),
     });
+    handleAuthError(response);
     return response.json();
   }
 
@@ -120,6 +142,7 @@ export class ApiService {
       },
       body: JSON.stringify(updatedData),
     });
+    handleAuthError(response);
     return response.json();
   }
 
@@ -131,6 +154,7 @@ export class ApiService {
         Authorization: `Bearer ${token}`,
       },
     });
+    handleAuthError(response);
     return response.json();
   }
 
@@ -153,6 +177,7 @@ export class ApiService {
       },
       body: JSON.stringify({ sale_id, quantity }),
     });
+    handleAuthError(response);
     return response.json();
   }
 } 
