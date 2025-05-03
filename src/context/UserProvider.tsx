@@ -139,7 +139,9 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       const result = await ApiService.login(email, password);
       saveToLocalStorage(result);
       dispatch({ type: 'SET_USER_DATA', payload: result });
-      await refetchUserStats();
+      // Esperamos a que los stats se carguen antes de continuar
+      const stats = await ApiService.getUserStats(result.token);
+      dispatch({ type: 'SET_USER_STATS', payload: stats });
     } catch (error) {
       dispatch({
         type: 'SET_ERROR',
@@ -148,7 +150,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       dispatch({ type: 'SET_LOADING', payload: false });
     }
-  }, [saveToLocalStorage, refetchUserStats]);
+  }, [saveToLocalStorage]);
 
   // Register
   const register = useCallback(async (email: string, name: string, password: string): Promise<void> => {
@@ -157,7 +159,9 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       const result = await ApiService.register(email, name, password);
       saveToLocalStorage(result);
       dispatch({ type: 'SET_USER_DATA', payload: result });
-      await refetchUserStats();
+      // Esperamos a que los stats se carguen antes de continuar
+      const stats = await ApiService.getUserStats(result.token);
+      dispatch({ type: 'SET_USER_STATS', payload: stats });
     } catch (error) {
       dispatch({
         type: 'SET_ERROR',
@@ -166,7 +170,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       dispatch({ type: 'SET_LOADING', payload: false });
     }
-  }, [saveToLocalStorage, refetchUserStats]);
+  }, [saveToLocalStorage]);
 
   // Logout
   const logout = useCallback(() => {
