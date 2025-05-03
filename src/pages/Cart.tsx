@@ -11,12 +11,14 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { CartItem } from '../types/interfaces'
 import { Link } from 'react-router-dom'
 import { useCheckout } from '../hooks/useQueries'
+import { useQueryClient } from '@tanstack/react-query'
 
 export const Cart = () => {
   const { cart, total, clearCart, removeFromCart } = useCart()
   const { token } = useUser()
   const [isProcessing, setIsProcessing] = useState(false)
   const checkoutMutation = useCheckout(token)
+  const queryClient = useQueryClient()
 
   const handlePay = async () => {
     if (!token) {
@@ -38,7 +40,14 @@ export const Cart = () => {
         toast.success(`Compra exitosa: ${item.name}`, {
           description: `Se compraron ${item.count} unidades.`,
         });
+        queryClient.invalidateQueries({ queryKey: ['saleDetail', item.id] });
       }
+      queryClient.invalidateQueries({ queryKey: ['marketplaceProducts'] });
+      queryClient.invalidateQueries({ queryKey: ['latestProducts'] });
+      queryClient.invalidateQueries({ queryKey: ['userStats'] });
+      queryClient.invalidateQueries({ queryKey: ['allPurchases'] });
+      queryClient.invalidateQueries({ queryKey: ['allSales'] });
+      queryClient.invalidateQueries({ queryKey: ['activeSales'] });
       clearCart();
     } catch (error) {
       toast.error('Error al procesar el pago.');

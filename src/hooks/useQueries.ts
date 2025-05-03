@@ -7,6 +7,9 @@ export const useUserStats = (token: string | null) => {
     queryKey: ['userStats'],
     queryFn: () => ApiService.getUserStats(token!),
     enabled: !!token,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    staleTime: 10000, // 10 segundos
   });
 };
 
@@ -15,6 +18,9 @@ export const useActiveSales = (token: string | null, limit: number, offset: numb
     queryKey: ['activeSales', limit, offset, token],
     queryFn: () => ApiService.getActiveSales(token!, limit, offset),
     enabled: !!token,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    staleTime: 10000,
   });
 };
 
@@ -23,6 +29,9 @@ export const useAllSales = (token: string | null, limit: number, offset: number)
     queryKey: ['allSales', token, limit, offset],
     queryFn: () => ApiService.getAllSales(token!, limit, offset),
     enabled: !!token,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    staleTime: 10000,
   });
 };
 
@@ -31,6 +40,9 @@ export const useAllPurchases = (token: string | null, limit: number, offset: num
     queryKey: ['allPurchases', token, limit, offset],
     queryFn: () => ApiService.getAllPurchases(token!, limit, offset),
     enabled: !!token,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    staleTime: 10000,
   });
 };
 
@@ -53,6 +65,9 @@ export const useSaleDetail = (id: string) => {
     queryKey: ['saleDetail', id],
     queryFn: () => ApiService.getSaleDetail(id),
     enabled: !!id,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    staleTime: 10000,
   });
 };
 
@@ -61,6 +76,9 @@ export const useComments = (saleId: string) => {
     queryKey: ['comments', saleId],
     queryFn: () => ApiService.getComments(saleId),
     enabled: !!saleId,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    staleTime: 10000,
   });
 };
 
@@ -98,6 +116,9 @@ export const useLatestProducts = (limit: number) => {
   return useQuery({
     queryKey: ['latestProducts', limit],
     queryFn: () => ApiService.getLatestProducts(limit),
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    staleTime: 10000,
   });
 };
 
@@ -105,6 +126,9 @@ export const useMarketplaceProducts = (limit: number, offset: number) => {
   return useQuery({
     queryKey: ['marketplaceProducts', limit, offset],
     queryFn: () => ApiService.getMarketplaceProducts(limit, offset),
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    staleTime: 10000,
   });
 };
 

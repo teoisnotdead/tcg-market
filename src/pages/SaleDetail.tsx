@@ -93,6 +93,13 @@ export const SaleDetail = () => {
         </div>
 
         <div className="w-full md:w-[500px] md:ml-10 mt-6 md:mt-0 flex flex-col gap-4">
+          {sale.status === "sold" && (
+            <div className="mb-2 flex justify-center">
+              <span className="inline-block bg-orange-500 text-white px-4 py-2 rounded font-bold text-base shadow">
+                ¡Esta carta ya fue vendida!
+              </span>
+            </div>
+          )}
           <h1 className="text-3xl font-bold text-[#F19F00]">{sale.name}</h1>
           <p className="text-gray-300">{sale.description}</p>
 
@@ -108,7 +115,7 @@ export const SaleDetail = () => {
             Vendedor: <span className="font-semibold">{sale.seller_name}</span>
           </div>
 
-          {isOwner ? (
+          {isOwner && sale.status !== "sold" ? (
             <>
               <EditSaleDialog
                 open={openEditModal}
@@ -150,7 +157,11 @@ export const SaleDetail = () => {
                 className="bg-[#F19F00] hover:bg-[#d98c00] text-white w-full mt-4 py-3 text-lg"
                 disabled={stockDisponible === 0 || sale.status !== "available"}
               >
-                {stockDisponible === 0 ? "Stock agotado" : "Agregar al carrito"}
+                {sale.status === "sold"
+                  ? "Vendida"
+                  : stockDisponible === 0
+                  ? "Stock agotado"
+                  : "Agregar al carrito"}
               </Button>
 
               {cartQuantity > 0 && (
@@ -172,9 +183,7 @@ export const SaleDetail = () => {
       {/* Sección de comentarios */}
       <div className="max-w-3xl mx-auto px-6 mt-8">
         <h2 className="text-lg font-bold mb-4">Comentarios</h2>
-
-        {/* Formulario para agregar comentarios */}
-        {token && (
+        {sale.status !== "sold" && token && (
           <div className="flex flex-col gap-2 mb-4">
             <Textarea
               placeholder="Escribe un comentario..."
@@ -186,7 +195,6 @@ export const SaleDetail = () => {
             </Button>
           </div>
         )}
-
         {/* Lista de comentarios */}
         <div className="space-y-4">
           {isLoadingComments ? (
