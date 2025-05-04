@@ -104,15 +104,15 @@ export const SaleDetail = () => {
           <p className="text-gray-300">{sale.description}</p>
 
           <div className="text-xl font-semibold">
-            Precio: <span className="text-white">{toLocalString(sale.price)}</span>
+            Precio: <span className="text-white font-light">{toLocalString(sale.price)}</span>
           </div>
 
-          <div className="text-md">
-            Stock disponible: <span className="font-semibold">{sale.quantity}</span>
+          <div className="text-xl font-semibold">
+            Cantidad: <span className="font-light">{sale.quantity}</span>
           </div>
 
-          <div className="text-md">
-            Vendedor: <span className="font-semibold">{sale.seller_name}</span>
+          <div className="text-xl font-semibold">
+            Vendedor: <span className="font-light">{sale.seller_name}</span>
           </div>
 
           {isOwner && sale.status !== "sold" ? (

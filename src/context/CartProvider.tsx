@@ -31,7 +31,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       const exists = prevCart.find((p) => p.id === item.id);
 
       if (exists) {
-        // ✅ Si ya está en el carrito, se incrementa la cantidad si hay stock disponible
+        //Si ya está en el carrito, se incrementa la cantidad si hay stock disponible
         if (exists.count >= item.quantity) {
           toast.warning("Stock agotado", { description: "No puedes agregar más unidades." });
           return prevCart;
@@ -45,7 +45,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
           p.id === item.id ? { ...p, count: p.count + 1 } : p
         );
       } else {
-        // ✅ Si no existe en el carrito, se agrega
+        // Si no existe en el carrito, se agrega
         toast.success("Producto agregado", {
           description: `${item.name} añadido al carrito.`,
         });

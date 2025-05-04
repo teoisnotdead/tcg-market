@@ -6,8 +6,10 @@ export const CardTcg: React.FC<CardTcgProps> = ({ id, image_url, name, descripti
 
   return (
     <div className="bg-[#090909]/40 text-white p-4 rounded-lg transition-all border border-transparent hover:border-[#D9D9D9]/50 hover:shadow-lg hover:shadow-white/20">
-      <div className="md:flex gap-4">
-        <img src={image_url} alt={name} className="w-32 h-auto rounded-lg" />
+      <div className="flex flex-col items-center md:flex-row md:items-start gap-4">
+        <div className="w-32 h-44 rounded-lg overflow-hidden flex items-center justify-center bg-black">
+          <img src={image_url} alt={name} className="w-full h-full object-cover" />
+        </div>
 
         <div className="flex flex-col justify-between flex-1">
           <div>
