@@ -87,6 +87,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             title: "Mis compras",
             url: "/cuenta/mis-compras",
           },
+          {
+            title: "Favoritos",
+            url: "/cuenta/favoritos",
+          }
         ],
       },
     ],

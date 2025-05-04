@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, useLocation } from 'react-router-dom'
 import { ProfileLayout } from '../layouts/ProfileLayout'
 import { Home } from '../pages/Home'
 import { Register } from '../pages/Register'
@@ -15,9 +15,11 @@ import { ActiveSales } from '../pages/ActiveSales'
 import { SalesHistory } from '../pages/SalesHistory'
 import { PurchasesHistory } from '../pages/PurchasesHistory'
 import { SaleDetail } from '../pages/SaleDetail'
+import { Favorites } from '../pages/Favorites'
 
 export const RoutesApp: React.FC = () => {
   const { token } = useUser()
+  const location = useLocation()
 
   return (
     <div className='flex flex-col min-h-screen'>
@@ -52,6 +54,7 @@ export const RoutesApp: React.FC = () => {
             <Route path='mis-ventas' element={<ActiveSales />} />
             <Route path='historial-ventas' element={<SalesHistory />} />
             <Route path='mis-compras' element={<PurchasesHistory />} />
+            <Route path='favoritos' element={<Favorites />} />
           </Route>
 
           <Route path='/' element={<Home />} />
@@ -63,7 +66,7 @@ export const RoutesApp: React.FC = () => {
         </Routes>
       </div>
 
-      {!window.location.pathname.startsWith('/cuenta') && <FooterSection />}
+      {!location.pathname.startsWith('/cuenta') && <FooterSection />}
     </div>
   )
 } 

@@ -185,4 +185,54 @@ export class ApiService {
     const response = await fetch(`${BASE_URL}/sales/search?q=${encodeURIComponent(q)}&limit=${limit}&offset=${offset}`);
     return response.json();
   }
+
+  static async addFavorite(token: string, saleId: string) {
+    const response = await fetch(`${BASE_URL}/favorites/${saleId}`, {
+      method: 'POST',
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    handleAuthError(response);
+    return response.json();
+  }
+
+  static async removeFavorite(token: string, saleId: string) {
+    const response = await fetch(`${BASE_URL}/favorites/${saleId}`, {
+      method: 'DELETE',
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    handleAuthError(response);
+    return response.json();
+  }
+
+  static async getUserFavorites(token: string, limit?: number, offset?: number) {
+    let url = `${BASE_URL}/favorites`;
+    if (limit !== undefined && offset !== undefined) {
+      url += `?limit=${limit}&offset=${offset}`;
+    }
+    const response = await fetch(url, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    handleAuthError(response);
+    return response.json();
+  }
+
+  static async checkFavorite(token: string, saleId: string) {
+    const response = await fetch(`${BASE_URL}/favorites/check/${saleId}`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    handleAuthError(response);
+    return response.json();
+  }
 } 

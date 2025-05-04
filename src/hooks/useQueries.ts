@@ -149,4 +149,45 @@ export const useSearchSales = (q: string, limit: number, offset: number, enabled
     refetchOnWindowFocus: true,
     staleTime: 10000,
   });
+};
+
+export const useAddFavorite = (token: string | null, saleId: string) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => ApiService.addFavorite(token!, saleId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['favorites'] });
+      queryClient.invalidateQueries({ queryKey: ['isFavorite', saleId] });
+    },
+  });
+};
+
+export const useRemoveFavorite = (token: string | null, saleId: string) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => ApiService.removeFavorite(token!, saleId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['favorites'] });
+      queryClient.invalidateQueries({ queryKey: ['isFavorite', saleId] });
+    },
+  });
+};
+
+export const useUserFavorites = (token: string | null, limit?: number, offset?: number) => {
+  return useQuery({
+    queryKey: ['favorites', limit, offset],
+    queryFn: () => ApiService.getUserFavorites(token!, limit, offset),
+    enabled: !!token,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    staleTime: 10000,
+  });
+};
+
+export const useCheckFavorite = (token: string | null, saleId: string) => {
+  return useQuery({
+    queryKey: ['isFavorite', saleId],
+    queryFn: () => ApiService.checkFavorite(token!, saleId),
+    enabled: !!token && !!saleId,
+  });
 }; 

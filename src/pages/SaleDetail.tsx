@@ -14,6 +14,8 @@ import { EditSaleDialog } from "@/components/EditSaleDialog";
 import { DeleteConfirmationDialog } from "@/components/DeleteConfirmationDialog";
 import { Toaster } from "@/components/ui/sonner";
 import { useSaleDetail, useComments, useAddComment, useEditSale, useDeleteSale } from "../hooks/useQueries";
+import { FavoriteButton } from "@/components/FavoriteButton";
+import { Eye } from "lucide-react";
 
 export const SaleDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -87,20 +89,20 @@ export const SaleDetail = () => {
     <div className="mx-auto max-w-7xl">
       <Toaster />
       <NavHome />
-      <div className="flex flex-col md:flex-row items-center justify-center min-h-[70vh] px-6 mt-3.5">
+      <div className="flex flex-col md:flex-row items-start justify-center min-h-[70vh] px-6 mt-6 gap-x-10">
         <div className="w-full md:w-[400px]">
           <img src={sale.image_url} alt={sale.name} className="w-full rounded-lg shadow-lg" />
         </div>
 
-        <div className="w-full md:w-[500px] md:ml-10 mt-6 md:mt-0 flex flex-col gap-4">
-          {sale.status === "sold" && (
-            <div className="mb-2 flex justify-center">
-              <span className="inline-block bg-orange-500 text-white px-4 py-2 rounded font-bold text-base shadow">
-                ¡Esta carta ya fue vendida!
-              </span>
-            </div>
-          )}
+        <div className="w-full md:w-[500px] flex flex-col gap-4">
+          <div className="flex justify-end">
+            {!isOwner && <FavoriteButton saleId={sale.id!} />}
+          </div>
           <h1 className="text-3xl font-bold text-[#F19F00]">{sale.name}</h1>
+          <div className="flex items-center gap-2 text-gray-400 text-sm mb-2">
+            <Eye className="w-5 h-5" />
+            <span>{sale.views}</span>
+          </div>
           <p className="text-gray-300">{sale.description}</p>
 
           <div className="text-xl font-semibold">
