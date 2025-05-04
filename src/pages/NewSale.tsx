@@ -86,7 +86,20 @@ export const NewSale = () => {
 
               <div>
                 <Label htmlFor="description">Descripción</Label>
-                <Textarea id="description" name="description" value={formData.description} onChange={handleChange} required />
+                <Textarea
+                  id="description"
+                  name="description"
+                  value={formData.description}
+                  onChange={e => {
+                    const value = e.target.value.slice(0, 100);
+                    setFormData(prev => ({ ...prev, description: value }));
+                  }}
+                  maxLength={100}
+                  required
+                />
+                <div className="text-right text-xs text-gray-400 mt-1">
+                  {formData.description.length}/100
+                </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
