@@ -1,4 +1,3 @@
-// src/components/AlertDialog/DeleteConfirmationDialog.tsx
 import React from "react";
 import {
   AlertDialog,

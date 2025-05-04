@@ -1,4 +1,3 @@
-// src/components/Dialog/EditSaleDialog.tsx
 import React, { useState } from "react";
 import {
   Dialog,
@@ -16,7 +15,7 @@ interface EditSaleDialogProps {
   open: boolean;
   onClose: () => void;
   sale: any; // Debes reemplazar esto con el tipo correcto de tu venta
-  onSave: (updatedSale: any) => void; // Recibe la venta modificada
+  onSave: (updatedSale: any) => void;
 }
 
 export const EditSaleDialog: React.FC<EditSaleDialogProps> = ({
@@ -38,8 +37,8 @@ export const EditSaleDialog: React.FC<EditSaleDialogProps> = ({
       description,
       quantity,
     };
-    onSave(updatedSale); // Se pasa el objeto actualizado
-    onClose(); // Se cierra el modal
+    onSave(updatedSale);
+    onClose();
   };
 
   return (

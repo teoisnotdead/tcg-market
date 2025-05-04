@@ -1,8 +1,8 @@
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from './lib/react-query';
 import { RoutesApp } from './routes/RoutesApp'
-import { CartProvider } from './context/CartProvider.tsx'
-import { UserProvider } from './context/UserProvider.tsx'
+import { CartProvider } from './context/CartProvider'
+import { UserProvider } from './context/UserProvider'
 import { ThemeProvider } from "@/components/theme-provider"
 import { BrowserRouter } from 'react-router-dom';
 
