@@ -138,4 +138,15 @@ export const useCheckout = (token: string | null) => {
       return await ApiService.checkout(token!, sale_id, quantity);
     },
   });
+};
+
+export const useSearchSales = (q: string, limit: number, offset: number, enabled: boolean) => {
+  return useQuery({
+    queryKey: ['searchSales', q, limit, offset],
+    queryFn: () => ApiService.getSearchSales(q, limit, offset),
+    enabled,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    staleTime: 10000,
+  });
 }; 

@@ -180,4 +180,9 @@ export class ApiService {
     handleAuthError(response);
     return response.json();
   }
+
+  static async getSearchSales(q: string, limit: number, offset: number) {
+    const response = await fetch(`${BASE_URL}/sales/search?q=${encodeURIComponent(q)}&limit=${limit}&offset=${offset}`);
+    return response.json();
+  }
 } 
