@@ -5,7 +5,7 @@ import { useLatestProducts } from "../hooks/useQueries";
 
 export const Home: React.FC = () => {
   const { data, isLoading } = useLatestProducts(3);
-  const products = Array.isArray(data?.data) ? data.data : [];
+  const products = data?.sales || [];
 
   return (
     <section className="mx-auto max-w-7xl">

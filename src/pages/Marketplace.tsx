@@ -30,7 +30,7 @@ export const Marketplace = () => {
 
   // Productos normales
   const { data, isLoading: isLoadingProducts } = useMarketplaceProducts(itemsPerPage, (currentPage - 1) * itemsPerPage);
-  const products = Array.isArray(data?.data) ? data.data : [];
+  const products = data?.sales || [];
   const totalPages = data?.totalPages || 1;
 
   // Búsqueda
@@ -40,7 +40,7 @@ export const Marketplace = () => {
   } = useSearchSales(debouncedSearch, itemsPerPage, (currentPage - 1) * itemsPerPage, searchActive);
 
   // Determinar qué mostrar
-  const showProducts = searchActive && searchData ? searchData.data : products;
+  const showProducts = searchActive && searchData ? searchData.sales : products;
   const showTotalPages = searchActive && searchData ? searchData.totalPages : totalPages;
   const isLoading = searchActive ? isLoadingSearch : isLoadingProducts;
 
