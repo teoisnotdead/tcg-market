@@ -83,7 +83,7 @@ export const Marketplace = () => {
   return (
     <div className='mx-auto max-w-7xl'>
       <NavHome />
-      <div className="px-4 sm:px-10 md:px-20">
+      <div className="px-4">
         <div className="flex flex-col sm:flex-row gap-4 items-center mb-6">
           <CategoryFilter ref={categoryFilterRef} onCategoriesChange={handleCategoriesChange} onClearFilters={handleClearFilters} />
           <div className="flex-1 w-full">
