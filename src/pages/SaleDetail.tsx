@@ -114,6 +114,10 @@ export const SaleDetail = () => {
           </div>
 
           <div className="text-xl font-semibold">
+            Categoría: <span className="font-light">{sale.category_name}</span>
+          </div>
+
+          <div className="text-xl font-semibold">
             Vendedor: <span className="font-light">{sale.seller_name}</span>
           </div>
 

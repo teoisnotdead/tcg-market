@@ -85,6 +85,7 @@ export const Marketplace = () => {
       <NavHome />
       <div className="px-4 sm:px-10 md:px-20">
         <div className="flex flex-col sm:flex-row gap-4 items-center mb-6">
+          <CategoryFilter ref={categoryFilterRef} onCategoriesChange={handleCategoriesChange} onClearFilters={handleClearFilters} />
           <div className="flex-1 w-full">
             <SearchBar
               value={search}
@@ -92,7 +93,6 @@ export const Marketplace = () => {
               placeholder="Buscar carta..."
             />
           </div>
-          <CategoryFilter ref={categoryFilterRef} onCategoriesChange={handleCategoriesChange} onClearFilters={handleClearFilters} />
         </div>
         <ProductSection
           title="Marketplace"
