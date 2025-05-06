@@ -14,7 +14,7 @@ import { Link } from "react-router-dom";
 
 export const ProductSection: React.FC<{
   title?: string;
-  products: CardTcgProps[];
+  products?: CardTcgProps[];
   totalPages?: number;
   currentPage?: number;
   setCurrentPage?: (page: number) => void;
@@ -23,7 +23,7 @@ export const ProductSection: React.FC<{
   skeletonCount?: number;
 }> = ({
   title = "Últimas Agregadas",
-  products,
+  products = [],
   totalPages = 1,
   currentPage = 1,
   setCurrentPage,
@@ -41,7 +41,7 @@ export const ProductSection: React.FC<{
               <Skeleton key={index} className="h-48 w-full rounded-lg bg-gray-700" />
             ))}
           </div>
-        ) : products.length === 0 ? (
+        ) : !products || products.length === 0 ? (
           <p className="text-gray-400 text-center">No hay productos disponibles.</p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

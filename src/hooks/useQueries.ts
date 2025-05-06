@@ -122,10 +122,10 @@ export const useLatestProducts = (limit: number) => {
   });
 };
 
-export const useMarketplaceProducts = (limit: number, offset: number) => {
+export const useMarketplaceProducts = (limit: number, offset: number, categories: string[] = []) => {
   return useQuery({
-    queryKey: ['marketplaceProducts', limit, offset],
-    queryFn: () => ApiService.getMarketplaceProducts(limit, offset),
+    queryKey: ['marketplaceProducts', limit, offset, categories],
+    queryFn: () => ApiService.getMarketplaceProducts(limit, offset, categories),
     refetchOnMount: true,
     refetchOnWindowFocus: true,
     staleTime: 10000,
@@ -140,10 +140,10 @@ export const useCheckout = (token: string | null) => {
   });
 };
 
-export const useSearchSales = (q: string, limit: number, offset: number, enabled: boolean) => {
+export const useSearchSales = (q: string, limit: number, offset: number, enabled: boolean, categories: string[] = []) => {
   return useQuery({
-    queryKey: ['searchSales', q, limit, offset],
-    queryFn: () => ApiService.getSearchSales(q, limit, offset),
+    queryKey: ['searchSales', q, limit, offset, categories],
+    queryFn: () => ApiService.getSearchSales(q, limit, offset, categories),
     enabled,
     refetchOnMount: true,
     refetchOnWindowFocus: true,

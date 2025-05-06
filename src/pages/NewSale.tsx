@@ -1,4 +1,4 @@
-import { useState, ChangeEvent, FormEvent } from "react"
+import { useState, useEffect, ChangeEvent, FormEvent } from "react"
 import { useUser } from "../context/UserProvider"
 import { SaleData } from "../types/interfaces"
 import { Input } from "@/components/ui/input"
@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { toast } from "sonner"
 import { useNavigate } from "react-router-dom"
 import { Toaster } from "@/components/ui/sonner"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 export const NewSale = () => {
   const { createSale } = useUser()
@@ -20,10 +21,25 @@ export const NewSale = () => {
     price: 0,
     image_url: "",
     quantity: 1,
+    category_id: ""
   })
-
+  const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
   const [loading, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    // Obtener categorías de la API
+    const fetchCategories = async () => {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/categories`);
+        const data = await res.json();
+        setCategories(data);
+      } catch (err) {
+        setCategories([]);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -33,14 +49,18 @@ export const NewSale = () => {
     }))
   }
 
+  const handleCategoryChange = (value: string) => {
+    setFormData((prev) => ({ ...prev, category_id: value }));
+  }
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setLoading(true)
     setError(null)
 
-    if (!formData.name || !formData.description || formData.price <= 0 || formData.quantity <= 0) {
-      setError("Por favor completa todos los campos correctamente.")
-      toast.error("Error al crear la venta", { description: "Completa todos los campos." })
+    if (!formData.name || !formData.description || formData.price <= 0 || formData.quantity <= 0 || !formData.category_id) {
+      setError("Por favor completa todos los campos correctamente, incluida la categoría.")
+      toast.error("Error al crear la venta", { description: "Completa todos los campos y selecciona una categoría." })
       setLoading(false)
       return
     }
@@ -51,7 +71,7 @@ export const NewSale = () => {
       setError(result.message ?? "Error al crear la venta")
       toast.error("Error al publicar la venta", { description: result.message ?? "Inténtalo de nuevo." })
     } else {
-      setFormData({ name: "", description: "", price: 0, image_url: "", quantity: 1 })
+      setFormData({ name: "", description: "", price: 0, image_url: "", quantity: 1, category_id: "" })
       toast.success("Venta creada con éxito", {
         description: `Has publicado ${formData.name} por $${formData.price}`,
         action: {
@@ -112,6 +132,20 @@ export const NewSale = () => {
                   <Label htmlFor="quantity">Cantidad</Label>
                   <Input type="number" id="quantity" name="quantity" value={formData.quantity} onChange={handleChange} required />
                 </div>
+              </div>
+
+              <div>
+                <Label htmlFor="category">Categoría</Label>
+                <Select value={formData.category_id} onValueChange={handleCategoryChange} required>
+                  <SelectTrigger id="category">
+                    <SelectValue placeholder="Selecciona una categoría" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {categories.map((cat) => (
+                      <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               <div>

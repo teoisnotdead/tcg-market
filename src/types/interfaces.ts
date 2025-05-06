@@ -48,6 +48,7 @@ export interface SaleData {
   image_url: string
   quantity: number
   status?: string
+  category_id: string
 }
 
 export interface SaleResponse {

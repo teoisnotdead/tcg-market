@@ -96,7 +96,7 @@ export const SaleDetail = () => {
 
         <div className="w-full md:w-[500px] flex flex-col gap-4">
           <div className="flex justify-end">
-            {!isOwner && <FavoriteButton saleId={sale.id!} />}
+            {!isOwner && token && <FavoriteButton saleId={sale.id!} />}
           </div>
           <h1 className="text-3xl font-bold text-[#F19F00]">{sale.name}</h1>
           <div className="flex items-center gap-2 text-gray-400 text-sm mb-2">

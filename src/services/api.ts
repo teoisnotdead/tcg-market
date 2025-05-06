@@ -163,8 +163,15 @@ export class ApiService {
     return response.json();
   }
 
-  static async getMarketplaceProducts(limit: number, offset: number) {
-    const response = await fetch(`${BASE_URL}/sales?limit=${limit}&offset=${offset}`);
+  static async getMarketplaceProducts(limit: number, offset: number, categories: string[] = []) {
+    const params = new URLSearchParams({
+      limit: limit.toString(),
+      offset: offset.toString()
+    });
+    if (categories.length > 0) {
+      params.append('categories', categories.join(','));
+    }
+    const response = await fetch(`${BASE_URL}/sales?${params.toString()}`);
     return response.json();
   }
 
@@ -181,8 +188,16 @@ export class ApiService {
     return response.json();
   }
 
-  static async getSearchSales(q: string, limit: number, offset: number) {
-    const response = await fetch(`${BASE_URL}/sales/search?q=${encodeURIComponent(q)}&limit=${limit}&offset=${offset}`);
+  static async getSearchSales(q: string, limit: number, offset: number, categories: string[] = []) {
+    const params = new URLSearchParams({
+      search: q,
+      limit: limit.toString(),
+      offset: offset.toString()
+    });
+    if (categories.length > 0) {
+      params.append('categories', categories.join(','));
+    }
+    const response = await fetch(`${BASE_URL}/sales/search?${params.toString()}`);
     return response.json();
   }
 
