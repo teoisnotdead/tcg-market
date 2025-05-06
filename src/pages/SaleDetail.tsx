@@ -89,7 +89,7 @@ export const SaleDetail = () => {
     <div className="mx-auto max-w-7xl">
       <Toaster />
       <NavHome />
-      <div className="flex flex-col md:flex-row items-start justify-center min-h-[70vh] px-6 mt-6 gap-x-10">
+      <div className="flex flex-col md:flex-row items-start justify-center px-6 mt-6 gap-10 mb-12">
         <div className="w-full md:w-[400px]">
           <img src={sale.image_url} alt={sale.name} className="w-full rounded-lg shadow-lg" />
         </div>
