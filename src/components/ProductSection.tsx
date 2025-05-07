@@ -32,7 +32,7 @@ export const ProductSection: React.FC<{
   skeletonCount = 6,
 }) => {
     return (
-      <section className="text-white py-6 px-4 max-w-screen-xl mx-auto">
+      <section className="text-white p-6 max-w-screen-xl mx-auto">
         <h2 className="text-xl font-bold mb-6">{title}</h2>
 
         {isLoading ? (
