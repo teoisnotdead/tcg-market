@@ -1,11 +1,12 @@
 import { createContext, useReducer, useContext, useEffect, ReactNode, useCallback, useMemo, useRef } from "react";
 import { UserContextType, AuthResponse, SaleData, SaleResponse, UserStats } from "../types/interfaces";
 import { ApiService } from "../services/api";
-import { useActiveSales, useAllSales, useAllPurchases, useCreateSale } from "../hooks/useQueries";
+import { useActiveSales, useAllSales, useAllPurchases, useCreateSale, useLogin, useRegister, useLogout, useRefreshToken } from "../hooks/useQueries";
 
 // Definición del estado
 interface UserState {
   token: string | null;
+  refreshToken: string | null;
   email: string | null;
   name: string | null;
   userId: string | null;
@@ -29,10 +30,11 @@ const userReducer = (state: UserState, action: UserAction): UserState => {
     case 'SET_USER_DATA':
       return {
         ...state,
-        token: action.payload.token,
-        email: action.payload.email,
-        name: action.payload.name,
-        userId: action.payload.userId,
+        token: action.payload.accessToken,
+        refreshToken: action.payload.refreshToken,
+        email: action.payload.user.email,
+        name: action.payload.user.name,
+        userId: action.payload.user.id,
         hasError: false,
         errorMessage: null,
       };
@@ -40,6 +42,7 @@ const userReducer = (state: UserState, action: UserAction): UserState => {
       return {
         ...state,
         token: null,
+        refreshToken: null,
         email: null,
         name: null,
         userId: null,
@@ -71,6 +74,7 @@ const userReducer = (state: UserState, action: UserAction): UserState => {
 // Estado inicial
 const initialState: UserState = {
   token: null,
+  refreshToken: null,
   email: null,
   name: null,
   userId: null,
@@ -88,21 +92,72 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
   // React Query hooks
   const createSaleMutation = useCreateSale();
+  const loginMutation = useLogin();
+  const registerMutation = useRegister();
+  const logoutMutation = useLogout();
+  const refreshTokenMutation = useRefreshToken();
 
-  // Verificar la validez del token periódicamente
-  useEffect(() => {
+  // Get User Data
+  const getUserData = useCallback(async (): Promise<void> => {
     if (!state.token) return;
+    try {
+      const data = await ApiService.getUserData(state.token);
+      dispatch({
+        type: 'SET_USER_DATA',
+        payload: {
+          accessToken: state.token,
+          refreshToken: state.refreshToken || '',
+          user: {
+            id: data.id,
+            email: data.email,
+            name: data.name,
+          }
+        },
+      });
+      localStorage.setItem("email", data.email);
+      localStorage.setItem("name", data.name);
+    } catch (error) {
+      dispatch({
+        type: 'SET_ERROR',
+        payload: { hasError: true, message: 'Error al obtener datos del usuario' },
+      });
+    }
+  }, [state.token, state.refreshToken]);
+
+  // Verificar la validez del token periódicamente y refrescar si es necesario
+  useEffect(() => {
+    if (!state.token || !state.refreshToken) return;
 
     const checkTokenValidity = async () => {
       try {
-        // Aseguramos que el token no sea null
-        if (!state.token) return;
         await ApiService.getUserData(state.token);
       } catch (error) {
-        // Si hay un error de autenticación, limpiar el estado
-        clearLocalStorage();
-        dispatch({ type: 'CLEAR_USER_DATA' });
-        window.location.href = "/login";
+        if (!state.refreshToken) return;
+        try {
+          const newTokens = await refreshTokenMutation.mutateAsync(state.refreshToken);
+          if (newTokens.accessToken && newTokens.refreshToken) {
+            localStorage.setItem("token", newTokens.accessToken);
+            localStorage.setItem("refreshToken", newTokens.refreshToken);
+            dispatch({
+              type: 'SET_USER_DATA',
+              payload: {
+                accessToken: newTokens.accessToken,
+                refreshToken: newTokens.refreshToken,
+                user: {
+                  id: state.userId!,
+                  email: state.email!,
+                  name: state.name!
+                }
+              }
+            });
+          } else {
+            throw new Error('No se pudieron renovar los tokens');
+          }
+        } catch (refreshError) {
+          clearLocalStorage();
+          dispatch({ type: 'CLEAR_USER_DATA' });
+          window.location.href = "/login";
+        }
       }
     };
 
@@ -110,19 +165,21 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     const interval = setInterval(checkTokenValidity, 5 * 60 * 1000);
 
     return () => clearInterval(interval);
-  }, [state.token]);
+  }, [state.token, state.refreshToken, refreshTokenMutation, state.userId, state.email, state.name]);
 
   // Guardar datos en localStorage
   const saveToLocalStorage = useCallback((data: AuthResponse) => {
-    localStorage.setItem("token", data.token);
-    localStorage.setItem("email", data.email);
-    localStorage.setItem("name", data.name);
-    localStorage.setItem("userId", data.userId);
+    localStorage.setItem("token", data.accessToken);
+    localStorage.setItem("refreshToken", data.refreshToken);
+    localStorage.setItem("email", data.user.email);
+    localStorage.setItem("name", data.user.name);
+    localStorage.setItem("userId", data.user.id);
   }, []);
 
   // Eliminar datos del localStorage
   const clearLocalStorage = useCallback(() => {
     localStorage.removeItem("token");
+    localStorage.removeItem("refreshToken");
     localStorage.removeItem("email");
     localStorage.removeItem("name");
     localStorage.removeItem("userId");
@@ -133,15 +190,17 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     if (hasLoadedFromStorage.current) return;
     hasLoadedFromStorage.current = true;
     const storedToken = localStorage.getItem("token");
+    const storedRefreshToken = localStorage.getItem("refreshToken");
     const storedEmail = localStorage.getItem("email");
     const storedName = localStorage.getItem("name");
     const storedUserId = localStorage.getItem("userId");
 
-    if (storedToken && storedEmail && storedName) {
+    if (storedToken && storedEmail && storedName && storedRefreshToken) {
       dispatch({
         type: 'SET_USER_DATA',
         payload: {
           token: storedToken,
+          refreshToken: storedRefreshToken,
           email: storedEmail,
           name: storedName,
           userId: storedUserId || '',
@@ -162,11 +221,11 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const login = useCallback(async (email: string, password: string): Promise<void> => {
     dispatch({ type: 'SET_LOADING', payload: true });
     try {
-      const result = await ApiService.login(email, password);
-      if (!result.token) throw new Error('No token');
+      const result = await loginMutation.mutateAsync({ email, password });
+      if (!result.accessToken || !result.refreshToken) throw new Error('No tokens');
       saveToLocalStorage(result);
       dispatch({ type: 'SET_USER_DATA', payload: result });
-      const stats = await ApiService.getUserStats(result.token);
+      const stats = await ApiService.getUserStats(result.accessToken);
       dispatch({ type: 'SET_USER_STATS', payload: stats });
     } catch (error) {
       clearLocalStorage();
@@ -178,17 +237,17 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       dispatch({ type: 'SET_LOADING', payload: false });
     }
-  }, [saveToLocalStorage, clearLocalStorage]);
+  }, [loginMutation, saveToLocalStorage, clearLocalStorage]);
 
   // Register
   const register = useCallback(async (email: string, name: string, password: string): Promise<void> => {
     dispatch({ type: 'SET_LOADING', payload: true });
     try {
-      const result = await ApiService.register(email, name, password);
-      if (!result.token) throw new Error('No token');
+      const result = await registerMutation.mutateAsync({ email, name, password });
+      if (!result.accessToken || !result.refreshToken) throw new Error('No tokens');
       saveToLocalStorage(result);
       dispatch({ type: 'SET_USER_DATA', payload: result });
-      const stats = await ApiService.getUserStats(result.token);
+      const stats = await ApiService.getUserStats(result.accessToken);
       dispatch({ type: 'SET_USER_STATS', payload: stats });
     } catch (error) {
       clearLocalStorage();
@@ -200,38 +259,21 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       dispatch({ type: 'SET_LOADING', payload: false });
     }
-  }, [saveToLocalStorage, clearLocalStorage]);
+  }, [registerMutation, saveToLocalStorage, clearLocalStorage]);
 
   // Logout
-  const logout = useCallback(() => {
+  const logout = useCallback(async () => {
+    if (state.token) {
+      try {
+        await logoutMutation.mutateAsync(state.token);
+      } catch (error) {
+        console.error('Error during logout:', error);
+      }
+    }
     clearLocalStorage();
     dispatch({ type: 'CLEAR_USER_DATA' });
     window.location.href = "/login";
-  }, [clearLocalStorage]);
-
-  // Get User Data
-  const getUserData = useCallback(async (): Promise<void> => {
-    if (!state.token) return;
-    try {
-      const data = await ApiService.getUserData(state.token);
-      dispatch({
-        type: 'SET_USER_DATA',
-        payload: {
-          token: state.token,
-          email: data.email,
-          name: data.name,
-          userId: data.id,
-        },
-      });
-      localStorage.setItem("email", data.email);
-      localStorage.setItem("name", data.name);
-    } catch (error) {
-      dispatch({
-        type: 'SET_ERROR',
-        payload: { hasError: true, message: 'Error al obtener datos del usuario' },
-      });
-    }
-  }, [state.token]);
+  }, [logoutMutation, clearLocalStorage, state.token]);
 
   // Create Sale
   const createSale = useCallback(async (saleData: SaleData): Promise<SaleResponse> => {

@@ -7,18 +7,30 @@ if (!BASE_URL) {
 }
 
 // Función para manejar errores de autenticación
-const handleAuthError = (response: Response) => {
+const handleAuthError = async (response: Response) => {
   if (response.status === 401) {
-    // Limpiar el localStorage
-    localStorage.removeItem("token");
-    localStorage.removeItem("email");
-    localStorage.removeItem("name");
-    localStorage.removeItem("userId");
-    // Redirigir al login
-    window.location.href = "/login";
-    throw new Error('Sesión expirada');
+    const refreshToken = localStorage.getItem("refreshToken");
+    if (refreshToken) {
+      try {
+        const newTokens = await ApiService.refreshToken(refreshToken);
+        if (newTokens.accessToken) {
+          localStorage.setItem("token", newTokens.accessToken);
+          localStorage.setItem("refreshToken", newTokens.refreshToken);
+          // Reintentar la petición original con el nuevo token
+          return true;
+        }
+      } catch (error) {
+        ApiService.clearAuthData();
+        window.location.href = "/login";
+        throw new Error('Sesión expirada');
+      }
+    } else {
+      ApiService.clearAuthData();
+      window.location.href = "/login";
+      throw new Error('Sesión expirada');
+    }
   }
-  return response;
+  return false;
 };
 
 export class ApiService {
@@ -31,13 +43,49 @@ export class ApiService {
     };
   }
 
+  static clearAuthData() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("email");
+    localStorage.removeItem("name");
+    localStorage.removeItem("userId");
+  }
+
   static async login(email: string, password: string): Promise<AuthResponse> {
     const response = await fetch(`${BASE_URL}/auth/login`, {
       method: "POST",
       ...this.getHeaders(null),
       body: JSON.stringify({ email, password }),
     });
+    const data = await response.json();
+    if (response.ok) {
+      localStorage.setItem("token", data.accessToken);
+      localStorage.setItem("refreshToken", data.refreshToken);
+      localStorage.setItem("email", data.user.email);
+      localStorage.setItem("name", data.user.name);
+      localStorage.setItem("userId", data.user.id);
+    }
+    return data;
+  }
+
+  static async refreshToken(refreshToken: string): Promise<{ accessToken: string; refreshToken: string }> {
+    const response = await fetch(`${BASE_URL}/auth/refresh`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ refreshToken }),
+    });
     return response.json();
+  }
+
+  static async logout(token: string): Promise<void> {
+    try {
+      await fetch(`${BASE_URL}/auth/logout`, {
+        method: "POST",
+        ...this.getHeaders(token),
+      });
+    } finally {
+      this.clearAuthData();
+    }
   }
 
   static async register(email: string, name: string, password: string): Promise<AuthResponse> {

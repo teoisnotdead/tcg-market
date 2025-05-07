@@ -1,11 +1,12 @@
 export interface UserContextType {
   token: string | null
+  refreshToken: string | null
   userId: string | null
   email: string | null
   name: string | null
   login: (email: string, password: string) => Promise<void>
   register: (email: string, name: string, password: string) => Promise<void>
-  logout: () => void
+  logout: () => Promise<void>
   getUserData: () => Promise<void>
   createSale: (saleData: SaleData) => Promise<SaleResponse>
   getUserStats: () => Promise<void>
@@ -30,10 +31,13 @@ export interface UserStats {
 }
 
 export interface AuthResponse {
-  email: string
-  name: string
-  token: string
-  userId: string
+  accessToken: string
+  refreshToken: string
+  user: {
+    id: string
+    name: string
+    email: string
+  }
 }
 
 export interface SaleData {

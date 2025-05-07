@@ -210,4 +210,48 @@ export const useCategories = () => {
     refetchOnWindowFocus: false,
     staleTime: 600000, // 10 minutos, ya que las categorías no cambian frecuentemente
   });
+};
+
+export const useLogin = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ email, password }: { email: string; password: string }) => {
+      return await ApiService.login(email, password);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['userStats'] });
+    },
+  });
+};
+
+export const useRegister = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ email, name, password }: { email: string; name: string; password: string }) => {
+      return await ApiService.register(email, name, password);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['userStats'] });
+    },
+  });
+};
+
+export const useLogout = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (token: string) => {
+      return await ApiService.logout(token);
+    },
+    onSuccess: () => {
+      queryClient.clear(); // Limpia toda la caché al cerrar sesión
+    },
+  });
+};
+
+export const useRefreshToken = () => {
+  return useMutation({
+    mutationFn: async (refreshToken: string) => {
+      return await ApiService.refreshToken(refreshToken);
+    },
+  });
 }; 
