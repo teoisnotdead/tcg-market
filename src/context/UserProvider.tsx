@@ -97,32 +97,23 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const logoutMutation = useLogout();
   const refreshTokenMutation = useRefreshToken();
 
-  // Get User Data
-  const getUserData = useCallback(async (): Promise<void> => {
-    if (!state.token) return;
-    try {
-      const data = await ApiService.getUserData(state.token);
-      dispatch({
-        type: 'SET_USER_DATA',
-        payload: {
-          accessToken: state.token,
-          refreshToken: state.refreshToken || '',
-          user: {
-            id: data.id,
-            email: data.email,
-            name: data.name,
-          }
-        },
-      });
-      localStorage.setItem("email", data.email);
-      localStorage.setItem("name", data.name);
-    } catch (error) {
-      dispatch({
-        type: 'SET_ERROR',
-        payload: { hasError: true, message: 'Error al obtener datos del usuario' },
-      });
-    }
-  }, [state.token, state.refreshToken]);
+  // Eliminar datos del localStorage
+  const clearLocalStorage = useCallback(() => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("email");
+    localStorage.removeItem("name");
+    localStorage.removeItem("userId");
+  }, []);
+
+  // Guardar datos en localStorage
+  const saveToLocalStorage = useCallback((data: AuthResponse) => {
+    localStorage.setItem("token", data.accessToken);
+    localStorage.setItem("refreshToken", data.refreshToken);
+    localStorage.setItem("email", data.user.email);
+    localStorage.setItem("name", data.user.name);
+    localStorage.setItem("userId", data.user.id);
+  }, []);
 
   // Verificar la validez del token periódicamente y refrescar si es necesario
   useEffect(() => {
@@ -130,6 +121,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
     const checkTokenValidity = async () => {
       try {
+        if (!state.token) return;
         await ApiService.getUserData(state.token);
       } catch (error) {
         if (!state.refreshToken) return;
@@ -138,18 +130,16 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
           if (newTokens.accessToken && newTokens.refreshToken) {
             localStorage.setItem("token", newTokens.accessToken);
             localStorage.setItem("refreshToken", newTokens.refreshToken);
-            dispatch({
-              type: 'SET_USER_DATA',
-              payload: {
-                accessToken: newTokens.accessToken,
-                refreshToken: newTokens.refreshToken,
-                user: {
-                  id: state.userId!,
-                  email: state.email!,
-                  name: state.name!
-                }
+            const authData: AuthResponse = {
+              accessToken: newTokens.accessToken,
+              refreshToken: newTokens.refreshToken,
+              user: {
+                id: state.userId || '',
+                email: state.email || '',
+                name: state.name || ''
               }
-            });
+            };
+            dispatch({ type: 'SET_USER_DATA', payload: authData });
           } else {
             throw new Error('No se pudieron renovar los tokens');
           }
@@ -165,25 +155,32 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     const interval = setInterval(checkTokenValidity, 5 * 60 * 1000);
 
     return () => clearInterval(interval);
-  }, [state.token, state.refreshToken, refreshTokenMutation, state.userId, state.email, state.name]);
+  }, [state.token, state.refreshToken, refreshTokenMutation, state.userId, state.email, state.name, clearLocalStorage]);
 
-  // Guardar datos en localStorage
-  const saveToLocalStorage = useCallback((data: AuthResponse) => {
-    localStorage.setItem("token", data.accessToken);
-    localStorage.setItem("refreshToken", data.refreshToken);
-    localStorage.setItem("email", data.user.email);
-    localStorage.setItem("name", data.user.name);
-    localStorage.setItem("userId", data.user.id);
-  }, []);
-
-  // Eliminar datos del localStorage
-  const clearLocalStorage = useCallback(() => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("refreshToken");
-    localStorage.removeItem("email");
-    localStorage.removeItem("name");
-    localStorage.removeItem("userId");
-  }, []);
+  // Get User Data
+  const getUserData = useCallback(async (): Promise<void> => {
+    if (!state.token) return;
+    try {
+      const data = await ApiService.getUserData(state.token);
+      const authData: AuthResponse = {
+        accessToken: state.token,
+        refreshToken: state.refreshToken || '',
+        user: {
+          id: data.id,
+          email: data.email,
+          name: data.name
+        }
+      };
+      dispatch({ type: 'SET_USER_DATA', payload: authData });
+      localStorage.setItem("email", data.email);
+      localStorage.setItem("name", data.name);
+    } catch (error) {
+      dispatch({
+        type: 'SET_ERROR',
+        payload: { hasError: true, message: 'Error al obtener datos del usuario' },
+      });
+    }
+  }, [state.token, state.refreshToken]);
 
   // Cargar datos del localStorage al iniciar (solo una vez)
   useEffect(() => {
@@ -195,17 +192,18 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     const storedName = localStorage.getItem("name");
     const storedUserId = localStorage.getItem("userId");
 
-    if (storedToken && storedEmail && storedName && storedRefreshToken) {
-      dispatch({
-        type: 'SET_USER_DATA',
-        payload: {
-          token: storedToken,
-          refreshToken: storedRefreshToken,
+    if (storedToken && storedEmail && storedName && storedRefreshToken && storedUserId) {
+      const authData: AuthResponse = {
+        accessToken: storedToken,
+        refreshToken: storedRefreshToken,
+        user: {
+          id: storedUserId,
           email: storedEmail,
-          name: storedName,
-          userId: storedUserId || '',
-        },
-      });
+          name: storedName
+        }
+      };
+      dispatch({ type: 'SET_USER_DATA', payload: authData });
+      
       // Cargar stats solo si hay token válido
       ApiService.getUserStats(storedToken)
         .then(stats => {
@@ -244,7 +242,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     dispatch({ type: 'SET_LOADING', payload: true });
     try {
       const result = await registerMutation.mutateAsync({ email, name, password });
-      if (!result.accessToken || !result.refreshToken) throw new Error('No tokens');
+      if (!result.accessToken || !result.refreshToken || !result.user) throw new Error('No tokens or user data');
       saveToLocalStorage(result);
       dispatch({ type: 'SET_USER_DATA', payload: result });
       const stats = await ApiService.getUserStats(result.accessToken);
