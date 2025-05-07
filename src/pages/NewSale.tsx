@@ -1,4 +1,4 @@
-import { useState, useEffect, ChangeEvent, FormEvent } from "react"
+import { useState, ChangeEvent, FormEvent } from "react"
 import { useUser } from "../context/UserProvider"
 import { SaleData } from "../types/interfaces"
 import { Input } from "@/components/ui/input"
@@ -10,10 +10,13 @@ import { toast } from "sonner"
 import { useNavigate } from "react-router-dom"
 import { Toaster } from "@/components/ui/sonner"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useLanguages, useCategories } from "../hooks/useQueries"
 
 export const NewSale = () => {
   const { createSale } = useUser()
   const navigate = useNavigate()
+  const { data: languages = [] } = useLanguages();
+  const { data: categories = [] } = useCategories();
 
   const [formData, setFormData] = useState<SaleData>({
     name: "",
@@ -21,25 +24,11 @@ export const NewSale = () => {
     price: 0,
     image_url: "",
     quantity: 1,
-    category_id: ""
+    category_id: "",
+    language_id: ""
   })
-  const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
   const [loading, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null)
-
-  useEffect(() => {
-    // Obtener categorías de la API
-    const fetchCategories = async () => {
-      try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/categories`);
-        const data = await res.json();
-        setCategories(data);
-      } catch (err) {
-        setCategories([]);
-      }
-    };
-    fetchCategories();
-  }, []);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -53,14 +42,18 @@ export const NewSale = () => {
     setFormData((prev) => ({ ...prev, category_id: value }));
   }
 
+  const handleLanguageChange = (value: string) => {
+    setFormData((prev) => ({ ...prev, language_id: value }));
+  }
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setLoading(true)
     setError(null)
 
-    if (!formData.name || !formData.description || formData.price <= 0 || formData.quantity <= 0 || !formData.category_id) {
-      setError("Por favor completa todos los campos correctamente, incluida la categoría.")
-      toast.error("Error al crear la venta", { description: "Completa todos los campos y selecciona una categoría." })
+    if (!formData.name || !formData.description || formData.price <= 0 || formData.quantity <= 0 || !formData.category_id || !formData.language_id) {
+      setError("Por favor completa todos los campos correctamente, incluida la categoría e idioma.")
+      toast.error("Error al crear la venta", { description: "Completa todos los campos y selecciona una categoría e idioma." })
       setLoading(false)
       return
     }
@@ -71,7 +64,7 @@ export const NewSale = () => {
       setError(result.message ?? "Error al crear la venta")
       toast.error("Error al publicar la venta", { description: result.message ?? "Inténtalo de nuevo." })
     } else {
-      setFormData({ name: "", description: "", price: 0, image_url: "", quantity: 1, category_id: "" })
+      setFormData({ name: "", description: "", price: 0, image_url: "", quantity: 1, category_id: "", language_id: "" })
       toast.success("Venta creada con éxito", {
         description: `Has publicado ${formData.name} por $${formData.price}`,
         action: {
@@ -143,6 +136,20 @@ export const NewSale = () => {
                   <SelectContent>
                     {categories.map((cat) => (
                       <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label htmlFor="language">Idioma</Label>
+                <Select value={formData.language_id} onValueChange={handleLanguageChange} required>
+                  <SelectTrigger id="language">
+                    <SelectValue placeholder="Selecciona un idioma" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {languages.map((lang) => (
+                      <SelectItem key={lang.id} value={lang.id}>{lang.name}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>

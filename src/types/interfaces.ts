@@ -49,6 +49,7 @@ export interface SaleData {
   quantity: number
   status?: string
   category_id: string
+  language_id: string
 }
 
 export interface SaleResponse {

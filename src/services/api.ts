@@ -250,4 +250,14 @@ export class ApiService {
     handleAuthError(response);
     return response.json();
   }
+
+  static async getLanguages() {
+    const response = await fetch(`${BASE_URL}/languages`);
+    return response.json();
+  }
+
+  static async getCategories() {
+    const response = await fetch(`${BASE_URL}/categories`);
+    return response.json();
+  }
 } 

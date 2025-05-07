@@ -118,6 +118,10 @@ export const SaleDetail = () => {
           </div>
 
           <div className="text-xl font-semibold">
+            Idioma: <span className="font-light">{sale.language_name}</span>
+          </div>
+
+          <div className="text-xl font-semibold">
             Vendedor: <span className="font-light">{sale.seller_name}</span>
           </div>
 

@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useLanguages, useCategories } from "../hooks/useQueries";
 
 
 interface EditSaleDialogProps {
@@ -30,20 +31,9 @@ export const EditSaleDialog: React.FC<EditSaleDialogProps> = ({
   const [description, setDescription] = useState(sale.description);
   const [quantity, setQuantity] = useState(sale.quantity);
   const [categoryId, setCategoryId] = useState(sale.category_id || "");
-  const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
-
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/categories`);
-        const data = await res.json();
-        setCategories(data);
-      } catch (err) {
-        setCategories([]);
-      }
-    };
-    fetchCategories();
-  }, []);
+  const [languageId, setLanguageId] = useState(sale.language_id || "");
+  const { data: categories = [] } = useCategories();
+  const { data: languages = [] } = useLanguages();
 
   useEffect(() => {
     setName(sale.name);
@@ -51,10 +41,15 @@ export const EditSaleDialog: React.FC<EditSaleDialogProps> = ({
     setDescription(sale.description);
     setQuantity(sale.quantity);
     setCategoryId(sale.category_id || "");
+    setLanguageId(sale.language_id || "");
   }, [sale]);
 
   const handleCategoryChange = (value: string) => {
     setCategoryId(value);
+  };
+
+  const handleLanguageChange = (value: string) => {
+    setLanguageId(value);
   };
 
   const handleSave = () => {
@@ -64,6 +59,7 @@ export const EditSaleDialog: React.FC<EditSaleDialogProps> = ({
       description,
       quantity,
       category_id: categoryId || sale.category_id,
+      language_id: languageId,
       image_url: sale.image_url
     };
     onSave(updatedSale);
@@ -111,6 +107,19 @@ export const EditSaleDialog: React.FC<EditSaleDialogProps> = ({
               <SelectContent>
                 {categories.map((cat) => (
                   <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <label className="block mb-1 text-sm font-medium">Idioma</label>
+            <Select value={languageId} onValueChange={handleLanguageChange}>
+              <SelectTrigger id="language-edit">
+                <SelectValue placeholder="Selecciona un idioma (opcional)" />
+              </SelectTrigger>
+              <SelectContent>
+                {languages.map((lang) => (
+                  <SelectItem key={lang.id} value={lang.id}>{lang.name}</SelectItem>
                 ))}
               </SelectContent>
             </Select>

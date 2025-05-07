@@ -190,4 +190,24 @@ export const useCheckFavorite = (token: string | null, saleId: string) => {
     queryFn: () => ApiService.checkFavorite(token!, saleId),
     enabled: !!token && !!saleId,
   });
+};
+
+export const useLanguages = () => {
+  return useQuery({
+    queryKey: ['languages'],
+    queryFn: () => ApiService.getLanguages(),
+    refetchOnMount: true,
+    refetchOnWindowFocus: false,
+    staleTime: 600000, // 10 minutos, ya que los idiomas no cambian frecuentemente
+  });
+};
+
+export const useCategories = () => {
+  return useQuery({
+    queryKey: ['categories'],
+    queryFn: () => ApiService.getCategories(),
+    refetchOnMount: true,
+    refetchOnWindowFocus: false,
+    staleTime: 600000, // 10 minutos, ya que las categorías no cambian frecuentemente
+  });
 }; 
